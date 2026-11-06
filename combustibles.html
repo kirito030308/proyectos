@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Combustibles - Cupet Comercialización</title>
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Estilos adicionales para animaciones -->
+  <style>
+    /* Animaciones de entrada */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-fade-in { animation: fadeInUp 0.8s ease forwards; }
+    .animate-slide-left { animation: slideInLeft 0.8s ease forwards; }
+    .animate-slide-right { animation: slideInRight 0.8s ease forwards; }
+    .animate-pulse { animation: pulse 2s infinite; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-bounce { animation: bounce 1s ease; }
+    
+    /* Efectos hover mejorados */
+    .product-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-15px) rotateX(5deg) scale(1.02);
+      box-shadow: 0 25px 50px rgba(0, 128, 0, 0.2);
+    }
+    
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 128, 0, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .product-card:hover::before {
+      left: 100%;
+    }
+    
+    .product-image {
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .product-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(0, 128, 0, 0.1), rgba(204, 0, 0, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .product-card:hover .product-image::after {
+      opacity: 1;
+    }
+    
+    /* Button animations */
+    .add-to-cart {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .add-to-cart::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .add-to-cart:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .add-to-cart:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 128, 0, 0.3);
+    }
+    
+    /* Cart animations */
+    .cart-summary {
+      transition: all 0.3s ease;
+      position: sticky;
+      top: 2rem;
+    }
+    
+    .cart-summary:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 128, 0, 0.15);
+    }
+    
+    .cart-item {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cart-item:hover {
+      background: #f0f8f0;
+      transform: translateX(5px);
+    }
+    
+    /* Particles background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .particle {
+      position: absolute;
+      background: var(--primary-green);
+      border-radius: 50%;
+      opacity: 0.05;
+      animation: float-particle 20s infinite linear;
+    }
+    
+    @keyframes float-particle {
+      from { transform: translateY(100vh) rotate(0deg); }
+      to { transform: translateY(-100px) rotate(360deg); }
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Scroll animations */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .scroll-reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+  
+  <style>
+    .combustibles-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+    
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .product-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .product-image {
+      height: 200px;
+      background: #f0f8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: var(--primary-green);
+    }
+    
+    .product-info {
+      padding: 1.5rem;
+    }
+    
+    .product-info h3 {
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .price {
+      font-size: 1.5rem;
+      color: var(--primary-red);
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+    
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .quantity-selector input {
+      width: 60px;
+      padding: 0.5rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .add-to-cart {
+      background: var(--primary-green);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    
+    .add-to-cart:hover {
+      background: var(--secondary-green);
+    }
+    
+    .cart-summary {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 2rem;
+    }
+    
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    
+    .total {
+      font-size: 1.5rem;
+      color: var(--primary-green);
+      font-weight: bold;
+      text-align: right;
+      margin: 1rem 0;
+    }
+    
+    .checkout-btn {
+      background: var(--primary-red);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      font-size: 1.1rem;
+    }
+    
+    .checkout-btn:hover {
+      background: #a00000;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Partículas animadas de fondo -->
+<div class="particles" id="particles"></div>
+
+<header style="background: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <img src="images/logo-empresa.jpg" alt="Cupet" style="height: 40px;">
+      <h1 style="color: var(--primary-green); margin: 0;">Combustibles</h1>
+    </div>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <a href="dashboard.html" style="color: var(--primary-green); text-decoration: none;">
+        <i class="fas fa-arrow-left"></i> Dashboard
+      </a>
+      <a href="index.html" style="color: var(--primary-red); text-decoration: none;">
+        <i class="fas fa-home"></i> Inicio
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="combustibles-container">
+  <div class="page-header animate-fade-in">
+    <h2 class="animate-bounce">Combustibles</h2>
+    <p class="animate-slide-left">Los mejores combustibles para tu vehículo o negocio</p>
+  </div>
+  
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <div>
+      <div class="products-grid scroll-reveal">
+        <div class="product-card animate-slide-left">
+          <div class="product-image">
+            <i class="fas fa-gas-pump" style="font-size: 4rem; color: var(--primary-green);"></i>
+          </div>
+          <div class="product-info">
+            <h3>Gasolina Regular</h3>
+            <p>Octanaje 87 - Ideal para uso diario</p>
+            <div class="price">$1.20 / litro</div>
+            <div class="quantity-selector">
+              <label>Cantidad (litros):</label>
+              <input type="number" id="regular-qty" value="20" min="1" max="100">
+            </div>
+            <button class="add-to-cart animate-pulse" onclick="addToCart('Gasolina Regular', 1.20, 'regular-qty')">
+              <i class="fas fa-cart-plus"></i> Agregar al Carrito
+            </button>
+          </div>
+        </div>
+        
+        <div class="product-card animate-slide-left" style="animation-delay: 0.2s;">
+          <div class="product-image">
+            <i class="fas fa-gas-pump" style="font-size: 4rem; color: var(--primary-green);"></i>
+          </div>
+          <div class="product-info">
+            <h3>Gasolina Especial</h3>
+            <p>Octanaje 93 - Mayor rendimiento</p>
+            <div class="price">$1.45 / litro</div>
+            <div class="quantity-selector">
+              <label>Cantidad (litros):</label>
+              <input type="number" id="especial-qty" value="20" min="1" max="100">
+            </div>
+            <button class="add-to-cart animate-pulse" onclick="addToCart('Gasolina Especial', 1.45, 'especial-qty')">
+              <i class="fas fa-cart-plus"></i> Agregar al Carrito
+            </button>
+          </div>
+        </div>
+        
+        <div class="product-card animate-slide-left" style="animation-delay: 0.4s;">
+          <div class="product-image">
+            <i class="fas fa-oil-can" style="font-size: 4rem; color: var(--primary-green);"></i>
+          </div>
+          <div class="product-info">
+            <h3>Diésel</h3>
+            <p>Alto rendimiento para motores diésel</p>
+            <div class="price">$0.95 / litro</div>
+            <div class="quantity-selector">
+              <label>Cantidad (litros):</label>
+              <input type="number" id="diesel-qty" value="20" min="1" max="100">
+            </div>
+            <button class="add-to-cart animate-pulse" onclick="addToCart('Diésel', 0.95, 'diesel-qty')">
+              <i class="fas fa-cart-plus"></i> Agregar al Carrito
+            </button>
+          </div>
+        </div>
+        
+        <div class="product-card animate-slide-left" style="animation-delay: 0.6s;">
+          <div class="product-image">
+            <i class="fas fa-flask" style="font-size: 4rem; color: var(--primary-green);"></i>
+          </div>
+          <div class="product-info">
+            <h3>Keroseno</h3>
+            <p>Para aviación y uso industrial</p>
+            <div class="price">$0.85 / litro</div>
+            <div class="quantity-selector">
+              <label>Cantidad (litros):</label>
+              <input type="number" id="kerosene-qty" value="20" min="1" max="100">
+            </div>
+            <button class="add-to-cart animate-pulse" onclick="addToCart('Keroseno', 0.85, 'kerosene-qty')">
+              <i class="fas fa-cart-plus"></i> Agregar al Carrito
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="cart-summary animate-slide-right">
+      <h3 style="color: var(--primary-green); margin-bottom: 1.5rem;" class="animate-pulse">
+        <i class="fas fa-shopping-cart"></i> Tu Carrito
+      </h3>
+      
+      <div id="cart-items">
+        <p style="color: #666; text-align: center; padding: 2rem 0;">
+          Tu carrito está vacío
+        </p>
+      </div>
+      
+      <div class="total" id="cart-total" style="display: none;">
+        Total: $0.00
+      </div>
+      
+      <button class="checkout-btn" id="checkout-btn" style="display: none;" onclick="checkout()">
+        <i class="fas fa-credit-card"></i> Proceder al Pago
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Generar partículas animadas
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 12;
+  
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    const size = Math.random() * 4 + 2;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 20 + 's';
+    particle.style.animationDuration = (Math.random() * 20 + 20) + 's';
+    
+    particlesContainer.appendChild(particle);
+  }
+}
+
+// Animaciones al hacer scroll
+function handleScrollAnimations() {
+  const reveals = document.querySelectorAll('.scroll-reveal');
+  
+  reveals.forEach(element => {
+    const windowHeight = window.innerHeight;
+    const elementTop = element.getBoundingClientRect().top;
+    const elementVisible = 150;
+    
+    if (elementTop < windowHeight - elementVisible) {
+      element.classList.add('active');
+    }
+  });
+}
+
+// Efecto de escritura para el título
+function typeWriter(element, text, speed = 50) {
+  let i = 0;
+  element.textContent = '';
+  
+  function type() {
+    if (i < text.length) {
+      element.textContent += text.charAt(i);
+      i++;
+      setTimeout(type, speed);
+    }
+  }
+  
+  type();
+}
+
+// Contador animado para el carrito
+function animateCounter(element, target, duration = 1000) {
+  let start = 0;
+  const increment = target / (duration / 16);
+  
+  function updateCounter() {
+    start += increment;
+    if (start < target) {
+      element.textContent = '$' + start.toFixed(2);
+      requestAnimationFrame(updateCounter);
+    } else {
+      element.textContent = '$' + target.toFixed(2);
+    }
+  }
+  
+  updateCounter();
+}
+
+let cart = [];
+
+function addToCart(product, price, qtyInputId) {
+  const qty = parseInt(document.getElementById(qtyInputId).value);
+  const existingItem = cart.find(item => item.product === product);
+  
+  if (existingItem) {
+    existingItem.quantity += qty;
+  } else {
+    cart.push({ product, price, quantity: qty });
+  }
+  
+  updateCart();
+  showToast(`${product} agregado al carrito`, 'success');
+  
+  // Animación del botón
+  event.target.innerHTML = '<i class="fas fa-check"></i> Agregado';
+  setTimeout(() => {
+    event.target.innerHTML = '<i class="fas fa-cart-plus"></i> Agregar al Carrito';
+  }, 1000);
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  updateCart();
+  showToast('Producto eliminado', 'info');
+}
+
+function updateCart() {
+  const cartItems = document.getElementById('cart-items');
+  const cartTotal = document.getElementById('cart-total');
+  const checkoutBtn = document.getElementById('checkout-btn');
+  
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<p style="color: #666; text-align: center; padding: 2rem 0;">Tu carrito está vacío</p>';
+    cartTotal.style.display = 'none';
+    checkoutBtn.style.display = 'none';
+    return;
+  }
+  
+  let html = '';
+  let total = 0;
+  
+  cart.forEach((item, index) => {
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+    
+    html += `
+      <div class="cart-item animate-slide-right" style="animation-delay: ${index * 0.1}s;">
+        <div>
+          <strong>${item.product}</strong><br>
+          <small>${item.quantity}L × $${item.price}</small>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-weight: bold;">$${subtotal.toFixed(2)}</span>
+          <button onclick="removeFromCart(${index})" style="background: var(--primary-red); color: white; border: none; border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; transition: all 0.3s;">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  cartItems.innerHTML = html;
+  
+  // Animar el total
+  cartTotal.style.display = 'block';
+  animateCounter(cartTotal, total);
+  
+  checkoutBtn.style.display = 'block';
+}
+
+function checkout() {
+  if (cart.length === 0) {
+    showToast('Tu carrito está vacío', 'error');
+    return;
+  }
+  
+  // Guardar carrito en sessionStorage
+  sessionStorage.setItem('cart', JSON.stringify(cart));
+  
+  // Mostrar loading
+  const checkoutBtn = document.getElementById('checkout-btn');
+  checkoutBtn.innerHTML = '<i class="loading-spinner"></i> Procesando...';
+  checkoutBtn.disabled = true;
+  
+  showToast('Redirigiendo al pago...', 'success');
+  
+  // Redirigir a página de pago
+  setTimeout(() => {
+    window.location.href = 'pago.html';
+  }, 1500);
+}
+
+// Efectos hover mejorados para los inputs
+document.addEventListener('DOMContentLoaded', function() {
+  // Crear partículas
+  createParticles();
+  
+  // Activar animaciones de scroll
+  handleScrollAnimations();
+  
+  // Efecto de escritura en el título
+  const title = document.querySelector('.page-header h2');
+  if (title) {
+    const originalText = title.textContent;
+    setTimeout(() => {
+      typeWriter(title, originalText, 30);
+    }, 500);
+  }
+  
+  // Animar inputs al focus
+  document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('focus', function() {
+      this.parentElement.style.transform = 'scale(1.05)';
+      this.parentElement.style.boxShadow = '0 5px 15px rgba(0, 128, 0, 0.1)';
+    });
+    
+    input.addEventListener('blur', function() {
+      this.parentElement.style.transform = 'scale(1)';
+      this.parentElement.style.boxShadow = 'none';
+    });
+  });
+  
+  // Efectos hover para botones
+  document.querySelectorAll('.add-to-cart').forEach(btn => {
+    btn.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px) scale(1.05)';
+    });
+    
+    btn.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0) scale(1)';
+    });
+  });
+});
+
+// Event listeners
+window.addEventListener('scroll', handleScrollAnimations);
+
+// Efecto de carga suave
+window.addEventListener('load', () => {
+  document.body.style.opacity = '0';
+  setTimeout(() => {
+    document.body.style.transition = 'opacity 0.5s ease';
+    document.body.style.opacity = '1';
+  }, 100);
+});
+
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: ${type === 'success' ? 'var(--primary-green)' : 'var(--primary-red)'};
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    animation: slideInRight 0.3s ease;
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+</script>
+
+<!-- Theme Toggle Script -->
+<script src="theme-toggle.js"></script>
+
+</body>
+</html>

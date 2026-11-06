@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mis Pedidos - Cupet Comercialización</title>
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Estilos adicionales para animaciones -->
+  <style>
+    /* Animaciones de entrada */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-fade-in { animation: fadeInUp 0.8s ease forwards; }
+    .animate-slide-left { animation: slideInLeft 0.8s ease forwards; }
+    .animate-slide-right { animation: slideInRight 0.8s ease forwards; }
+    .animate-pulse { animation: pulse 2s infinite; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-bounce { animation: bounce 1s ease; }
+    
+    /* Efectos hover mejorados */
+    .order-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .order-card:hover {
+      transform: translateY(-15px) rotateX(5deg) scale(1.02);
+      box-shadow: 0 25px 50px rgba(204, 0, 0, 0.2);
+    }
+    
+    .order-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(204, 0, 0, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .order-card:hover::before {
+      left: 100%;
+    }
+    
+    /* Button animations */
+    .order-btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .order-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .order-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .order-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(204, 0, 0, 0.3);
+    }
+    
+    /* Particles background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .particle {
+      position: absolute;
+      background: var(--primary-red);
+      border-radius: 50%;
+      opacity: 0.05;
+      animation: float-particle 20s infinite linear;
+    }
+    
+    @keyframes float-particle {
+      from { transform: translateY(100vh) rotate(0deg); }
+      to { transform: translateY(-100px) rotate(360deg); }
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Scroll animations */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .scroll-reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Estilos específicos de pedidos */
+    .pedidos-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
+      color: white;
+      padding: 4rem 3rem;
+      text-align: center;
+      border-radius: 20px;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: float 20s ease-in-out infinite;
+    }
+    
+    .page-header h2 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .page-header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      padding: 2rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .filters span {
+      font-weight: 700;
+      color: #333;
+      font-size: 1.1rem;
+      margin-right: 1rem;
+    }
+    
+    .filter-btn {
+      background: #f8f9fa;
+      color: #495057;
+      border: 2px solid #e9ecef;
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .filter-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: linear-gradient(135deg, #cc0000, #990000);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+      z-index: 0;
+    }
+    
+    .filter-btn:hover::before {
+      width: 150px;
+      height: 150px;
+    }
+    
+    .filter-btn:hover {
+      color: white;
+      border-color: #cc0000;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(204, 0, 0, 0.25);
+    }
+    
+    .filter-btn.active {
+      background: linear-gradient(135deg, #cc0000, #990000);
+      color: white;
+      border-color: #cc0000;
+      box-shadow: 0 4px 15px rgba(204, 0, 0, 0.2);
+    }
+    
+    .filter-btn span {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .orders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .order-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+      border-left: 5px solid #cc0000;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .order-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(204, 0, 0, 0.03), transparent);
+      transition: left 0.8s ease;
+    }
+    
+    .order-card:hover::before {
+      left: 100%;
+    }
+    
+    .order-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(204, 0, 0, 0.15);
+    }
+    
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid #f8f9fa;
+    }
+    
+    .order-info {
+      flex: 1;
+    }
+    
+    .order-id {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #cc0000;
+      margin-bottom: 0.5rem;
+    }
+    
+    .order-date {
+      color: #6c757d;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .order-date::before {
+      content: '📅';
+    }
+    
+    .status-badge {
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .status-confirmado {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+    }
+    
+    .status-procesando {
+      background: linear-gradient(135deg, #ffc107, #fd7e14);
+      color: white;
+    }
+    
+    .status-enviado {
+      background: linear-gradient(135deg, #17a2b8, #007bff);
+      color: white;
+    }
+    
+    .status-entregado {
+      background: linear-gradient(135deg, #6f42c1, #e83e8c);
+      color: white;
+    }
+    
+    .order-items {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #e9ecef;
+      font-size: 0.95rem;
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+      border-top: 2px solid #dee2e6;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #cc0000;
+    }
+    
+    .order-item span:first-child {
+      color: #495057;
+    }
+    
+    .order-item span:last-child {
+      color: #212529;
+      font-weight: 600;
+    }
+    
+    .order-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid #e9ecef;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #212529;
+    }
+    
+    .order-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .order-actions button {
+      padding: 1rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-details {
+      background: linear-gradient(135deg, #cc0000, #990000);
+      color: white;
+    }
+    
+    .btn-details:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(204, 0, 0, 0.3);
+    }
+    
+    .btn-track {
+      background: white;
+      color: #cc0000;
+      border: 2px solid #cc0000;
+    }
+    
+    .btn-track:hover {
+      background: #cc0000;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(204, 0, 0, 0.2);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 6rem 3rem;
+      color: #6c757d;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+    }
+    
+    .empty-state i {
+      font-size: 5rem;
+      color: #dee2e6;
+      margin-bottom: 2rem;
+      opacity: 0.6;
+    }
+    
+    .empty-state h3 {
+      color: #495057;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .empty-state p {
+      color: #6c757d;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    
+    .empty-state .action-btn {
+      background: linear-gradient(135deg, #cc0000, #990000);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .empty-state .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(204, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Partículas animadas de fondo -->
+<div class="particles" id="particles"></div>
+
+<header style="background: white; padding: 1.5rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-bottom: 1px solid #f8f9fa;">
+  <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; align-items: center; gap: 1.5rem;">
+      <img src="images/logo-empresa.jpg" alt="Cupet" style="height: 45px; border-radius: 8px;">
+      <h1 style="color: #cc0000; margin: 0; font-size: 1.8rem; font-weight: 700;">Mis Pedidos</h1>
+    </div>
+    <nav style="display: flex; gap: 1.5rem; align-items: center;">
+      <a href="dashboard.html" style="color: #495057; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s ease;">
+        <i class="fas fa-arrow-left"></i> Dashboard
+      </a>
+      <a href="index.html" style="color: #495057; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s ease;">
+        <i class="fas fa-home"></i> Inicio
+      </a>
+    </nav>
+  </div>
+</header>
+
+<div class="pedidos-container">
+  <div class="page-header animate-fade-in">
+    <h2 class="animate-bounce">
+      <i class="fas fa-shopping-cart" style="margin-right: 1rem; opacity: 0.8;"></i>
+      Historial de Pedidos
+    </h2>
+    <p class="animate-slide-left">Revisa el estado y detalles de todos tus pedidos realizados</p>
+  </div>
+  
+  <div class="filters animate-slide-left">
+    <span><i class="fas fa-filter" style="margin-right: 0.5rem; color: #cc0000;"></i>Filtrar:</span>
+    <button class="filter-btn active" onclick="filterOrders('todos')"><span>Todos</span></button>
+    <button class="filter-btn" onclick="filterOrders('confirmado')"><span>Confirmados</span></button>
+    <button class="filter-btn" onclick="filterOrders('procesando')"><span>Procesando</span></button>
+    <button class="filter-btn" onclick="filterOrders('enviado')"><span>Enviados</span></button>
+    <button class="filter-btn" onclick="filterOrders('entregado')"><span>Entregados</span></button>
+  </div>
+  
+  <div id="orders-grid" class="orders-grid scroll-reveal">
+    <!-- Los pedidos se cargarán dinámicamente aquí -->
+  </div>
+</div>
+
+<script>
+// Datos de ejemplo para pedidos
+const orders = [
+  {
+    id: 'ORD-001',
+    date: '2024-01-15T10:30:00',
+    status: 'entregado',
+    total: 120.50,
+    items: [
+      { name: 'Gasolina Regular', quantity: 20, price: 1.20 },
+      { name: 'Diésel', quantity: 10, price: 0.95 }
+    ]
+  },
+  {
+    id: 'ORD-002',
+    date: '2024-01-20T14:15:00',
+    status: 'procesando',
+    total: 85.00,
+    items: [
+      { name: 'Gasolina Especial', quantity: 15, price: 1.45 },
+      { name: 'Keroseno', quantity: 5, price: 0.85 }
+    ]
+  },
+  {
+    id: 'ORD-003',
+    date: '2024-01-25T09:45:00',
+    status: 'enviado',
+    total: 200.00,
+    items: [
+      { name: 'GLP', quantity: 2, price: 25.00 },
+      { name: 'Lubricantes', quantity: 3, price: 50.00 }
+    ]
+  }
+];
+
+let allOrders = [];
+let currentFilter = 'todos';
+
+// Generar partículas animadas
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 12;
+  
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    const size = Math.random() * 4 + 2;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 20 + 's';
+    particle.style.animationDuration = (Math.random() * 20 + 20) + 's';
+    
+    particlesContainer.appendChild(particle);
+  }
+}
+
+// Animaciones al hacer scroll
+function handleScrollAnimations() {
+  const reveals = document.querySelectorAll('.scroll-reveal');
+  
+  reveals.forEach(element => {
+    const windowHeight = window.innerHeight;
+    const elementTop = element.getBoundingClientRect().top;
+    const elementVisible = 150;
+    
+    if (elementTop < windowHeight - elementVisible) {
+      element.classList.add('active');
+    }
+  });
+}
+
+// Cargar pedidos al iniciar
+document.addEventListener('DOMContentLoaded', function() {
+  createParticles();
+  handleScrollAnimations();
+  loadOrders();
+});
+
+// Cargar pedidos
+function loadOrders() {
+  // Simular carga de datos
+  allOrders = orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+  displayOrders(allOrders);
+}
+
+// Filtrar pedidos
+function filterOrders(status) {
+  currentFilter = status;
+  
+  // Actualizar botones activos
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Filtrar y mostrar pedidos
+  const filteredOrders = status === 'todos' 
+    ? allOrders 
+    : allOrders.filter(order => order.status === status);
+  
+  displayOrders(filteredOrders);
+}
+
+// Mostrar pedidos
+function displayOrders(orders) {
+  const ordersGrid = document.getElementById('orders-grid');
+  
+  if (orders.length === 0) {
+    ordersGrid.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-shopping-cart"></i>
+        <h3>No hay pedidos encontrados</h3>
+        <p>${currentFilter === 'todos' ? 'Aún no has realizado ningún pedido. ¡Comienza tu primera compra ahora!' : 'No hay pedidos con el estado seleccionado.'}</p>
+        <a href="dashboard.html" class="action-btn">
+          <i class="fas fa-plus"></i> Realizar mi primer pedido
+        </a>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '';
+  
+  orders.forEach((order, index) => {
+    const orderDate = new Date(order.date);
+    const formattedDate = orderDate.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    html += `
+      <div class="order-card animate-slide-left" style="animation-delay: ${index * 0.1}s;">
+        <div class="order-header">
+          <div class="order-info">
+            <div class="order-id">${order.id}</div>
+            <div class="order-date">${formattedDate}</div>
+          </div>
+          <div class="status-badge status-${order.status}">${getStatusText(order.status)}</div>
+        </div>
+        
+        <div class="order-items">
+          ${order.items.map(item => `
+            <div class="order-item">
+              <span>${item.name} x ${item.quantity}</span>
+              <span>$${(item.price * item.quantity).toFixed(2)}</span>
+            </div>
+          `).join('')}
+          <div class="order-item">
+            <span>Total</span>
+            <span>$${order.total.toFixed(2)}</span>
+          </div>
+        </div>
+        
+        <div class="order-actions">
+          <button class="btn-details" onclick="viewOrderDetails('${order.id}')">
+            <i class="fas fa-eye"></i> Ver Detalles
+          </button>
+          <button class="btn-track" onclick="trackOrder('${order.id}')">
+            <i class="fas fa-truck"></i> Seguir
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  ordersGrid.innerHTML = html;
+}
+
+// Obtener texto del estado
+function getStatusText(status) {
+  const statusTexts = {
+    'confirmado': 'Confirmado',
+    'procesando': 'Procesando',
+    'enviado': 'Enviado',
+    'entregado': 'Entregado',
+    'cancelado': 'Cancelado'
+  };
+  return statusTexts[status] || status;
+}
+
+// Ver detalles del pedido
+function viewOrderDetails(orderId) {
+  const order = allOrders.find(o => o.id === orderId);
+  if (order) {
+    showToast(`Viendo detalles del pedido ${orderId}`, 'info');
+  }
+}
+
+// Seguir pedido
+function trackOrder(orderId) {
+  const order = allOrders.find(o => o.id === orderId);
+  if (order) {
+    showToast(`Seguimiento del pedido ${orderId}`, 'info');
+  }
+}
+
+// Toast notifications
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: ${type === 'success' ? 'var(--primary-red)' : 'var(--primary-red)'};
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    animation: slideInRight 0.3s ease;
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Event listeners
+window.addEventListener('scroll', handleScrollAnimations);
+
+// Efecto de carga suave
+window.addEventListener('load', () => {
+  document.body.style.opacity = '0';
+  setTimeout(() => {
+    document.body.style.transition = 'opacity 0.5s ease';
+    document.body.style.opacity = '1';
+  }, 100);
+});
+</script>
+
+<!-- Theme Toggle Script -->
+<script src="theme-toggle.js"></script>
+
+</body>
+</html>

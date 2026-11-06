@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Pago - Cupet Comercialización</title>
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Estilos adicionales para animaciones -->
+  <style>
+    /* Animaciones de entrada */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-fade-in { animation: fadeInUp 0.8s ease forwards; }
+    .animate-slide-left { animation: slideInLeft 0.8s ease forwards; }
+    .animate-slide-right { animation: slideInRight 0.8s ease forwards; }
+    .animate-pulse { animation: pulse 2s infinite; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-bounce { animation: bounce 1s ease; }
+    
+    /* Efectos hover mejorados */
+    .payment-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .payment-card:hover {
+      transform: translateY(-15px) rotateX(5deg) scale(1.02);
+      box-shadow: 0 25px 50px rgba(204, 0, 0, 0.2);
+    }
+    
+    .payment-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(204, 0, 0, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .payment-card:hover::before {
+      left: 100%;
+    }
+    
+    /* Button animations */
+    .payment-btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .payment-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .payment-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .payment-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(204, 0, 0, 0.3);
+    }
+    
+    /* Particles background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .particle {
+      position: absolute;
+      background: var(--primary-red);
+      border-radius: 50%;
+      opacity: 0.05;
+      animation: float-particle 20s infinite linear;
+    }
+    
+    @keyframes float-particle {
+      from { transform: translateY(100vh) rotate(0deg); }
+      to { transform: translateY(-100px) rotate(360deg); }
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Scroll animations */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .scroll-reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+  
+  <style>
+    .pago-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+    
+    .pago-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    
+    .order-summary {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    
+    .payment-form {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .total-row {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-green);
+      text-align: right;
+      padding: 1rem 0;
+      border-top: 2px solid var(--primary-green);
+      margin-top: 1rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-green);
+    }
+    
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .payment-method {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .payment-method:hover {
+      border-color: var(--primary-green);
+    }
+    
+    .payment-method.selected {
+      border-color: var(--primary-green);
+      background: #f0f8f0;
+    }
+    
+    .payment-method i {
+      font-size: 2rem;
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .card-inputs {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .pay-btn {
+      background: var(--primary-red);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.1rem;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    
+    .pay-btn:hover {
+      background: #a00000;
+    }
+    
+    .pay-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .delivery-info {
+      background: #f0f8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    
+    .delivery-info h4 {
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 0;
+    }
+    
+    .step {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #666;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .step.active {
+      background: var(--primary-green);
+      color: white;
+      border-color: var(--primary-green);
+    }
+    
+    .step.completed {
+      background: var(--primary-red);
+      color: white;
+      border-color: var(--primary-red);
+    }
+  </style>
+</head>
+<body>
+
+<header style="background: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <img src="images/logo-empresa.jpg" alt="Cupet" style="height: 40px;">
+      <h1 style="color: var(--primary-green); margin: 0;">Proceso de Pago</h1>
+    </div>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <a href="dashboard.html" style="color: var(--primary-green); text-decoration: none;">
+        <i class="fas fa-arrow-left"></i> Dashboard
+      </a>
+      <a href="index.html" style="color: var(--primary-red); text-decoration: none;">
+        <i class="fas fa-home"></i> Inicio
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="pago-container">
+  <div class="page-header">
+    <h2>Finalizar tu Pedido</h2>
+    <p>Revisa tu orden y completa el pago</p>
+  </div>
+  
+  <div class="steps">
+    <div class="step completed">1</div>
+    <div class="step completed">2</div>
+    <div class="step active">3</div>
+    <div class="step">4</div>
+  </div>
+  
+  <div class="pago-grid">
+    <!-- Resumen del Pedido -->
+    <div class="order-summary">
+      <h3 style="color: var(--primary-green); margin-bottom: 1.5rem;">
+        <i class="fas fa-shopping-cart"></i> Resumen del Pedido
+      </h3>
+      
+      <div id="order-items">
+        <!-- Items se cargarán dinámicamente -->
+      </div>
+      
+      <div class="delivery-info" id="delivery-info" style="display: none;">
+        <h4><i class="fas fa-truck"></i> Información de Entrega</h4>
+        <div id="delivery-details"></div>
+      </div>
+      
+      <div class="total-row" id="total-row">
+        Total: $0.00
+      </div>
+    </div>
+    
+    <!-- Formulario de Pago -->
+    <div class="payment-form">
+      <h3 style="color: var(--primary-green); margin-bottom: 1.5rem;">
+        <i class="fas fa-credit-card"></i> Información de Pago
+      </h3>
+      
+      <div class="payment-methods">
+        <div class="payment-method selected" onclick="selectPayment(this, 'tarjeta')">
+          <i class="fas fa-credit-card"></i>
+          <div>Tarjeta Clásica o Visa</div>
+        </div>
+        <div class="payment-method" onclick="selectPayment(this, 'transfermovil')">
+          <i class="fas fa-exchange-alt"></i>
+          <div>Transfermovil</div>
+        </div>
+      </div>
+      
+      <form id="payment-form">
+        <!-- Datos de facturación -->
+        <div class="form-group">
+          <label for="numero-confirmar">Número a Confirmar</label>
+          <input type="tel" id="numero-confirmar" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="monto-pago">Monto a Pagar </label>
+          <input type="number" id="monto-pago" step="0.01" min="0" required>
+        </div>
+        
+        <!-- Datos de tarjeta (solo para pago con tarjeta) -->
+        <div id="tarjeta-payment">
+          <div class="form-group">
+            <label for="numero-tarjeta">Número de Tarjeta</label>
+            <input type="text" id="numero-tarjeta" placeholder="1234 5678 9012 3456" maxlength="19">
+          </div>
+          
+          <div class="card-inputs">
+            <div class="form-group">
+              <label for="fecha-expiracion">Fecha de Expiración</label>
+              <input type="text" id="fecha-expiracion" placeholder="MM/AA" maxlength="5">
+            </div>
+            <div class="form-group">
+              <label for="cvv">CVV</label>
+              <input type="text" id="cvv" placeholder="123" maxlength="3">
+            </div>
+            <div class="form-group">
+              <label for="codigo-postal">Código Postal</label>
+              <input type="text" id="codigo-postal" placeholder="73200">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Datos de transfermovil -->
+        <div id="transfermovil-payment" style="display: none;">
+          <div class="form-group">
+            <label>Tarjeta</label>
+            <input type="tel" placeholder="+53 5 XXXXXXX">
+          </div>
+          <div class="form-group">
+            <label>Confirmar Número</label>
+            <input type="tel" placeholder="+53 5 XXXXXXX">
+          </div>
+        </div>
+        
+        <button type="submit" class="pay-btn" id="pay-btn">
+          <i class="fas fa-lock"></i> Procesar Pago Seguro
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let selectedPaymentMethod = 'tarjeta';
+let orderData = null;
+
+// Cargar datos del pedido
+function loadOrderData() {
+  // Intentar cargar datos de diferentes fuentes
+  const cart = sessionStorage.getItem('cart');
+  const orderDataStr = sessionStorage.getItem('orderData');
+  const distributionOrder = sessionStorage.getItem('distributionOrder');
+  
+  if (cart) {
+    // Carrito simple
+    const cartItems = JSON.parse(cart);
+    displayCartItems(cartItems);
+  } else if (orderDataStr) {
+    // Pedido con delivery
+    orderData = JSON.parse(orderDataStr);
+    displayOrderData(orderData);
+  } else if (distributionOrder) {
+    // Pedido de distribución
+    const distOrder = JSON.parse(distributionOrder);
+    displayDistributionOrder(distOrder);
+  } else {
+    // No hay datos, redirigir
+    window.location.href = 'dashboard.html';
+  }
+}
+
+function displayCartItems(cartItems) {
+  const orderItems = document.getElementById('order-items');
+  let html = '';
+  let total = 0;
+  
+  cartItems.forEach(item => {
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+    
+    html += `
+      <div class="order-item">
+        <div>
+          <strong>${item.product}</strong><br>
+          <small>${item.quantity} × $${item.price}</small>
+        </div>
+        <span style="font-weight: bold;">$${subtotal.toFixed(2)}</span>
+      </div>
+    `;
+  });
+  
+  orderItems.innerHTML = html;
+  document.getElementById('total-row').innerHTML = `Total: $${total.toFixed(2)}`;
+  document.getElementById('monto-pago').value = total.toFixed(2);
+}
+
+function displayOrderData(data) {
+  const orderItems = document.getElementById('order-items');
+  let html = '';
+  let total = 0;
+  
+  data.cart.forEach(item => {
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+    
+    html += `
+      <div class="order-item">
+        <div>
+          <strong>${item.product}</strong><br>
+          <small>${item.quantity} × $${item.price}</small>
+        </div>
+        <span style="font-weight: bold;">$${subtotal.toFixed(2)}</span>
+      </div>
+    `;
+  });
+  
+  orderItems.innerHTML = html;
+  
+  // Mostrar información de entrega
+  const deliveryInfo = document.getElementById('delivery-info');
+  const deliveryDetails = document.getElementById('delivery-details');
+  
+  deliveryInfo.style.display = 'block';
+  deliveryDetails.innerHTML = `
+    <p><strong>Método:</strong> ${data.delivery}</p>
+    <p><strong>Costo de entrega:</strong> $${data.deliveryFee.toFixed(2)}</p>
+  `;
+  
+  const finalTotal = total + data.deliveryFee;
+  document.getElementById('total-row').innerHTML = `Total: $${finalTotal.toFixed(2)}`;
+  document.getElementById('monto-pago').value = finalTotal.toFixed(2);
+}
+
+function displayDistributionOrder(data) {
+  const orderItems = document.getElementById('order-items');
+  
+  orderItems.innerHTML = `
+    <div class="order-item">
+      <div>
+        <strong>${data.product}</strong><br>
+        <small>${data.cantidad} ${data.product.includes('litros') ? 'litros' : 'unidades'}</small><br>
+        <small>Entrega: ${data.fechaEntrega}</small>
+      </div>
+      <span style="font-weight: bold;">Por confirmar</span>
+    </div>
+  `;
+  
+  // Mostrar información de entrega
+  const deliveryInfo = document.getElementById('delivery-info');
+  const deliveryDetails = document.getElementById('delivery-details');
+  
+  deliveryInfo.style.display = 'block';
+  deliveryDetails.innerHTML = `
+    <p><strong>Cliente:</strong> ${data.nombre}</p>
+    <p><strong>Teléfono:</strong> ${data.telefono}</p>
+    <p><strong>Dirección:</strong> ${data.direccion}</p>
+    <p><strong>Fecha:</strong> ${data.fechaEntrega}</p>
+  `;
+  
+  document.getElementById('total-row').innerHTML = `Total: Por confirmar`;
+  document.getElementById('monto-pago').value = '0.00';
+}
+
+function selectPayment(element, method) {
+  // Remover selección anterior
+  document.querySelectorAll('.payment-method').forEach(el => {
+    el.classList.remove('selected');
+  });
+  
+  // Agregar selección nueva
+  element.classList.add('selected');
+  selectedPaymentMethod = method;
+  
+  // Mostrar/ocultar formularios específicos
+  document.getElementById('tarjeta-payment').style.display = method === 'tarjeta' ? 'block' : 'none';
+  document.getElementById('transfermovil-payment').style.display = method === 'transfermovil' ? 'block' : 'none';
+}
+
+// Formatear número de tarjeta
+document.getElementById('numero-tarjeta')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\s/g, '');
+  let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+  e.target.value = formattedValue;
+});
+
+// Formatear fecha de expiración
+document.getElementById('fecha-expiracion')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.length >= 2) {
+    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+  }
+  e.target.value = value;
+});
+
+// Manejar envío del formulario
+document.getElementById('payment-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const payBtn = document.getElementById('pay-btn');
+  payBtn.disabled = true;
+  payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+  
+  // Simular procesamiento
+  setTimeout(() => {
+    // Guardar información del pedido
+    const paymentData = {
+      method: selectedPaymentMethod,
+      numeroConfirmar: document.getElementById('numero-confirmar').value,
+      monto: document.getElementById('monto-pago').value,
+      timestamp: new Date().toISOString()
+    };
+    
+    sessionStorage.setItem('paymentData', JSON.stringify(paymentData));
+    sessionStorage.setItem('orderCompleted', 'true');
+    
+    // Redirigir a confirmación
+    window.location.href = 'confirmacion.html';
+  }, 2000);
+});
+
+// Cargar datos al iniciar
+document.addEventListener('DOMContentLoaded', loadOrderData);
+</script>
+
+<!-- Theme Toggle Script -->
+<script src="theme-toggle.js"></script>
+
+</body>
+</html>

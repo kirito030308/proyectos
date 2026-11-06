@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Distribución - Cupet Comercialización</title>
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Estilos adicionales para animaciones -->
+  <style>
+    /* Animaciones de entrada */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-fade-in { animation: fadeInUp 0.8s ease forwards; }
+    .animate-slide-left { animation: slideInLeft 0.8s ease forwards; }
+    .animate-slide-right { animation: slideInRight 0.8s ease forwards; }
+    .animate-pulse { animation: pulse 2s infinite; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-bounce { animation: bounce 1s ease; }
+    
+    /* Efectos hover mejorados */
+    .service-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .service-card:hover {
+      transform: translateY(-15px) rotateX(5deg) scale(1.02);
+      box-shadow: 0 25px 50px rgba(204, 0, 0, 0.2);
+    }
+    
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(204, 0, 0, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .service-card:hover::before {
+      left: 100%;
+    }
+    
+    /* Button animations */
+    .service-btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .service-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .service-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .service-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(204, 0, 0, 0.3);
+    }
+    
+    /* Particles background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .particle {
+      position: absolute;
+      background: var(--primary-red);
+      border-radius: 50%;
+      opacity: 0.05;
+      animation: float-particle 20s infinite linear;
+    }
+    
+    @keyframes float-particle {
+      from { transform: translateY(100vh) rotate(0deg); }
+      to { transform: translateY(-100px) rotate(360deg); }
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Scroll animations */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .scroll-reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .service-card:hover i {
+      transform: scale(1.2) rotate(15deg);
+      color: var(--primary-red);
+    }
+    
+    /* Form animations */
+    .form-group {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .form-group:hover {
+      transform: translateX(5px);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 128, 0, 0.1);
+    }
+    
+    /* Submit button animation */
+    .submit-btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .submit-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 128, 0, 0.3);
+    }
+    
+    /* Particles background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .particle {
+      position: absolute;
+      background: var(--primary-green);
+      border-radius: 50%;
+      opacity: 0.05;
+      animation: float-particle 20s infinite linear;
+    }
+    
+    @keyframes float-particle {
+      from { transform: translateY(100vh) rotate(0deg); }
+      to { transform: translateY(-100px) rotate(360deg); }
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Scroll animations */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .scroll-reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Truck animation */
+    @keyframes truckMove {
+      0% { transform: translateX(-20px); }
+      50% { transform: translateX(20px); }
+      100% { transform: translateX(-20px); }
+    }
+    
+    .truck-icon {
+      animation: truckMove 3s ease-in-out infinite;
+      margin-right: 0.5rem;
+      display: inline-block;
+    }
+  </style>
+  
+  <style>
+    .distribucion-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+    
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .service-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      cursor: pointer;
+    }
+    
+    .service-card i {
+      font-size: 3rem;
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+    }
+    
+    .service-card h3 {
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+    }
+    
+    .service-btn {
+      background: var(--primary-green);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    
+    .service-btn:hover {
+      background: var(--secondary-green);
+    }
+    
+    .order-form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    
+    .order-form h3 {
+      color: var(--primary-green);
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .submit-btn {
+      background: var(--primary-red);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.1rem;
+      width: 100%;
+    }
+    
+    .delivery-info {
+      background: #f0f8f0;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .delivery-info h4 {
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+    }
+    
+    .delivery-info ul {
+      margin: 0;
+      padding-left: 1.5rem;
+      color: #666;
+    }
+    
+    .delivery-info li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .map-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    
+    .map-placeholder {
+      padding: 3rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Partículas animadas de fondo -->
+<div class="particles" id="particles"></div>
+
+<header style="background: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;" class="animate-fade-in">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <img src="images/logo-empresa.jpg" alt="Cupet" style="height: 40px;">
+      <h1 style="color: var(--primary-green); margin: 0;">Servicio de Distribución</h1>
+    </div>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <a href="dashboard.html" style="color: var(--primary-green); text-decoration: none;">
+        <i class="fas fa-arrow-left"></i> Dashboard
+      </a>
+      <a href="index.html" style="color: var(--primary-red); text-decoration: none;">
+        <i class="fas fa-home"></i> Inicio
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="distribucion-container">
+  <div class="page-header animate-fade-in">
+    <h2 class="animate-bounce">Servicio de Distribución</h2>
+    <p class="animate-slide-left">Entrega de combustibles y productos a domicilio</p>
+  </div>
+  
+  <div class="delivery-info animate-slide-right">
+    <h4 class="animate-pulse"><i class="fas fa-truck truck-icon"></i> Información de Entrega</h4>
+    <ul>
+      <li>Entrega en 24-48 horas dentro del municipio</li>
+      <li>Entrega en 72 horas para zonas rurales</li>
+      <li>Mínimo de pedido: $50.00</li>
+      <li>Costo de envío: $5.00 (pedidos menores a $100)</li>
+      <li>Envío gratuito en pedidos mayores a $100</li>
+    </ul>
+  </div>
+  
+  <div class="service-grid scroll-reveal">
+    <div class="service-card animate-slide-left" onclick="showOrderForm('combustibles')" style="animation-delay: 0.1s;">
+      <i class="fas fa-gas-pump animate-pulse"></i>
+      <h3>Distribución de Combustibles</h3>
+      <p>Gasolina, diésel y keroseno a domicilio</p>
+      <button class="service-btn animate-delivery">
+        <i class="fas fa-truck"></i> Solicitar Entrega
+      </button>
+    </div>
+    
+    <div class="service-card animate-slide-left" onclick="showOrderForm('glp')" style="animation-delay: 0.2s;">
+      <i class="fas fa-fire animate-pulse"></i>
+      <h3>Distribución de GLP</h3>
+      <p>Cilindros de gas doméstico e industrial</p>
+      <button class="service-btn animate-delivery">
+        <i class="fas fa-truck"></i> Solicitar GLP
+      </button>
+    </div>
+    
+    <div class="service-card animate-slide-left" onclick="showOrderForm('lubricantes')" style="animation-delay: 0.3s;">
+      <i class="fas fa-oil-can animate-pulse"></i>
+      <h3>Distribución de Lubricantes</h3>
+      <p>Aceites y grasas industriales</p>
+      <button class="service-btn animate-delivery">
+        <i class="fas fa-truck"></i> Solicitar Lubricantes
+      </button>
+    </div>
+  </div>
+  
+  <div class="order-form-container scroll-reveal" id="orderFormContainer" style="display: none;">
+    <div class="order-form animate-slide-right">
+      <h3 id="formTitle">Solicitud de Distribución</h3>
+      
+      <form id="distributionForm">
+        <div class="form-group animate-slide-left" style="animation-delay: 0.1s;">
+          <label for="nombre">Nombre Completo</label>
+          <input type="text" id="nombre" name="nombre" required>
+        </div>
+        
+        <div class="form-group animate-slide-left" style="animation-delay: 0.2s;">
+          <label for="telefono">Teléfono</label>
+          <input type="tel" id="telefono" name="telefono" required>
+        </div>
+        
+        <div class="form-group animate-slide-left" style="animation-delay: 0.3s;">
+          <label for="direccion">Dirección de Entrega</label>
+          <textarea id="direccion" name="direccion" required placeholder="Calle, número, municipio..."></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group animate-slide-left" style="animation-delay: 0.4s;">
+            <label for="cantidad">Cantidad</label>
+            <input type="number" id="cantidad" name="cantidad" required min="1">
+          </div>
+          
+          <div class="form-group animate-slide-left" style="animation-delay: 0.5s;">
+            <label for="fechaEntrega">Fecha de Entrega Deseada</label>
+            <input type="date" id="fechaEntrega" name="fechaEntrega" required>
+          </div>
+        </div>
+        
+        <div class="form-group animate-slide-left" style="animation-delay: 0.6s;">
+          <label for="notas">Notas Adicionales</label>
+          <textarea id="notas" name="notas" placeholder="Instrucciones especiales de entrega..."></textarea>
+        </div>
+        
+        <button type="submit" class="submit-btn animate-pulse">
+          <i class="fas fa-paper-plane"></i> Enviar Solicitud
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <div class="map-container scroll-reveal">
+    <h3 class="animate-bounce">Área de Cobertura</h3>
+    <div class="map-placeholder animate-float">
+      <i class="fas fa-map-marked-alt" style="font-size: 4rem; color: var(--primary-green);"></i>
+      <p>Cubrimos todo el municipio de Las Tunas y zonas rurales cercanas</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Verificar si el usuario está logueado
+if (!sessionStorage.getItem('userLoggedIn')) {
+  window.location.href = 'login.html';
+}
+
+// Generar partículas animadas
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 12;
+  
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    const size = Math.random() * 4 + 2;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 20 + 's';
+    particle.style.animationDuration = (Math.random() * 20 + 20) + 's';
+    
+    particlesContainer.appendChild(particle);
+  }
+}
+
+// Animaciones al hacer scroll
+function handleScrollAnimations() {
+  const reveals = document.querySelectorAll('.scroll-reveal');
+  
+  reveals.forEach(element => {
+    const windowHeight = window.innerHeight;
+    const elementTop = element.getBoundingClientRect().top;
+    const elementVisible = 150;
+    
+    if (elementTop < windowHeight - elementVisible) {
+      element.classList.add('active');
+    }
+  });
+}
+
+// Mostrar formulario de pedido
+function showOrderForm(service) {
+  const formContainer = document.getElementById('orderFormContainer');
+  const formTitle = document.getElementById('formTitle');
+  
+  const titles = {
+    'combustibles': 'Solicitud de Distribución de Combustibles',
+    'glp': 'Solicitud de Distribución de GLP',
+    'lubricantes': 'Solicitud de Distribución de Lubricantes'
+  };
+  
+  formTitle.textContent = titles[service];
+  formContainer.style.display = 'block';
+  formContainer.scrollIntoView({ behavior: 'smooth' });
+  
+  // Animar formulario
+  formContainer.classList.add('animate-bounce');
+  setTimeout(() => {
+    formContainer.classList.remove('animate-bounce');
+  }, 1000);
+}
+
+// Enviar formulario
+document.getElementById('distributionForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const submitBtn = this.querySelector('.submit-btn');
+  submitBtn.innerHTML = '<i class="loading-spinner"></i> Enviando...';
+  submitBtn.disabled = true;
+  
+  // Simular envío
+  setTimeout(() => {
+    const formData = new FormData(this);
+    const orderData = {
+      product: document.getElementById('formTitle').textContent,
+      nombre: formData.get('nombre'),
+      telefono: formData.get('telefono'),
+      direccion: formData.get('direccion'),
+      cantidad: formData.get('cantidad'),
+      fechaEntrega: formData.get('fechaEntrega'),
+      notas: formData.get('notas')
+    };
+    
+    // Guardar en sessionStorage
+    sessionStorage.setItem('distributionOrder', JSON.stringify(orderData));
+    
+    showToast('Solicitud enviada correctamente', 'success');
+    
+    // Redirigir a pago
+    setTimeout(() => {
+      window.location.href = 'pago.html';
+    }, 1500);
+  }, 2000);
+});
+
+// Efectos hover mejorados
+document.addEventListener('DOMContentLoaded', function() {
+  // Crear partículas
+  createParticles();
+  
+  // Activar animaciones de scroll
+  handleScrollAnimations();
+  
+  // Efectos hover para tarjetas
+  document.querySelectorAll('.service-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-15px) rotateX(5deg) scale(1.02)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0) rotateX(0) scale(1)';
+    });
+  });
+});
+
+// Event listeners
+window.addEventListener('scroll', handleScrollAnimations);
+
+// Efecto de carga suave
+window.addEventListener('load', () => {
+  document.body.style.opacity = '0';
+  setTimeout(() => {
+    document.body.style.transition = 'opacity 0.5s ease';
+    document.body.style.opacity = '1';
+  }, 100);
+});
+
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: ${type === 'success' ? 'var(--primary-green)' : 'var(--primary-red)'};
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    animation: slideInRight 0.3s ease;
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+</script>
+
+<!-- Theme Toggle Script -->
+<script src="theme-toggle.js"></script>
+
+</body>
+</html>
