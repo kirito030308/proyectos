@@ -69,8 +69,8 @@ header {
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--glass-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  position: sticky;
-  top: 0;
+  /* El encabezado acompaña al contenido y desaparece al hacer scroll. */
+  position: relative;
   z-index: 100;
 }
 
@@ -1546,13 +1546,38 @@ html {
 /* Responsive */
 @media (max-width: 800px) {
   .hamburger {
-    display: block;
-    position: relative;
-    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: max(14px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+    z-index: 1102;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 14px;
+    background: var(--bg-glass, #ffffff);
+    color: var(--primary-green);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.16);
+    line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  .hamburger:active {
+    transform: scale(0.94);
+  }
+
+  .hamburger:focus-visible {
+    outline: 3px solid var(--primary-red);
+    outline-offset: 3px;
   }
   
   .header-container {
     padding: 0.8rem 1rem;
+    padding-right: 1rem;
   }
   
   .logo-area {
@@ -2668,3 +2693,140 @@ body.dark-mode .product-price {
   color: #4ade80;
 }
 
+
+
+/* ================================================================
+   CUPET · capa de consistencia visual, accesibilidad y responsive
+   ================================================================ */
+:root {
+  --cupet-focus: #1457a6;
+  --cupet-radius: 14px;
+  --cupet-shadow-soft: 0 8px 24px rgba(24, 39, 56, .08);
+  --cupet-border: rgba(31, 52, 71, .13);
+}
+html { scroll-behavior: smooth; scroll-padding-top: 92px; }
+body { overflow-x: clip; }
+img, video, iframe { max-width: 100%; }
+img { height: auto; }
+button, input, select, textarea { font: inherit; }
+button, a, [role="button"] { -webkit-tap-highlight-color: transparent; }
+:focus-visible {
+  outline: 3px solid var(--cupet-focus) !important;
+  outline-offset: 3px !important;
+  border-radius: 5px;
+}
+::selection { background: rgba(0, 102, 51, .18); color: var(--text-primary); }
+.visually-hidden {
+  position: absolute !important; width: 1px !important; height: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+
+/* Jerarquía tipográfica y superficies */
+h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -.025em; }
+p { text-wrap: pretty; }
+.service-card, .product-card, .stat-card, .order-card, .profile-card,
+.payment-method, .cart-summary, .order-summary, .payment-form {
+  border-radius: var(--cupet-radius);
+}
+.service-card, .product-card, .order-card, .profile-card {
+  box-shadow: var(--cupet-shadow-soft);
+  border: 1px solid var(--cupet-border);
+}
+.service-card:hover, .product-card:hover {
+  box-shadow: 0 14px 32px rgba(24, 39, 56, .13);
+}
+button, .btn, .add-to-cart, .checkout-btn, .pay-btn {
+  min-height: 42px;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+button:active, .btn:active, .add-to-cart:active, .checkout-btn:active, .pay-btn:active {
+  transform: translateY(1px);
+}
+
+/* Formularios coherentes y legibles */
+input, select, textarea {
+  max-width: 100%;
+  border-radius: 9px;
+}
+input::placeholder, textarea::placeholder { color: #707985; opacity: 1; }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-green) !important;
+  box-shadow: 0 0 0 3px rgba(0, 102, 51, .13);
+}
+label { line-height: 1.4; }
+
+/* Evita desbordamientos de tablas y bloques largos en móvil. */
+table { max-width: 100%; }
+pre, code { overflow-wrap: anywhere; }
+.container, .header-container, .section-container { min-width: 0; }
+
+/* Navegación móvil: que el menú no tape ni desborde la pantalla. */
+@media (max-width: 800px) {
+  .header-container { padding-left: 1rem; padding-right: 1rem; gap: .75rem; }
+  nav.active { max-height: calc(100dvh - 76px); overflow-y: auto; overscroll-behavior: contain; }
+  .nav-links { gap: .65rem; }
+  .nav-links a { min-height: 42px; }
+  .hero { padding: 2.6rem 1.15rem; }
+  .section-container, .container { width: min(100% - 2rem, 100%); }
+}
+@media (max-width: 480px) {
+  body { font-size: 15px; }
+  .logo-img { height: 42px; margin-right: 5px; }
+  .logo-text h1 { font-size: 1.12rem; }
+  .logo-text span { font-size: .75rem; }
+  .hero h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+  .hero p { font-size: .98rem; }
+  .btn, button { max-width: 100%; }
+  .search-container { max-width: 100%; }
+  .search-container input { width: min(52vw, 180px); }
+  .product-card, .service-card { margin-inline: 0; }
+  .chatbot-window { max-width: calc(100vw - 24px); }
+}
+
+/* Modo oscuro: refuerza contraste de superficies comunes. */
+body.dark-mode {
+  background: #111827;
+  color: #e5e7eb;
+}
+body.dark-mode .service-card,
+body.dark-mode .product-card,
+body.dark-mode .order-card,
+body.dark-mode .profile-card,
+body.dark-mode .stat-card,
+body.dark-mode .cart-summary,
+body.dark-mode .order-summary,
+body.dark-mode .payment-form,
+body.dark-mode .filters-section,
+body.dark-mode .empty-state {
+  background-color: #1f2937;
+  color: #e5e7eb;
+  border-color: rgba(255,255,255,.12);
+}
+body.dark-mode p, body.dark-mode li, body.dark-mode label { color: #d1d5db; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background-color: #111827;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+body.dark-mode input::placeholder, body.dark-mode textarea::placeholder { color: #aab4c2; }
+
+/* Respeta la preferencia de movimiento del sistema operativo. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
+}
+
+/* El selector de tema es un control, no un elemento arrastrable. */
+.theme-toggle { cursor: pointer; touch-action: manipulation; }

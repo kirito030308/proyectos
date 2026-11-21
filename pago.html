@@ -434,7 +434,7 @@
       <form id="payment-form">
         <!-- Datos de facturación -->
         <div class="form-group">
-          <label for="numero-confirmar">Número a Confirmar</label>
+          <label for="numero-confirmar">Tarjeta</label>
           <input type="tel" id="numero-confirmar" required>
         </div>
         
@@ -446,8 +446,8 @@
         <!-- Datos de tarjeta (solo para pago con tarjeta) -->
         <div id="tarjeta-payment">
           <div class="form-group">
-            <label for="numero-tarjeta">Número de Tarjeta</label>
-            <input type="text" id="numero-tarjeta" placeholder="1234 5678 9012 3456" maxlength="19">
+            <label for="numero-tarjeta">Número de Celular</label>
+            <input type="text" id="numero-tarjeta" placeholder="+53 5XXXXXXX" maxlength="19">
           </div>
           
           <div class="card-inputs">
@@ -469,8 +469,9 @@
         <!-- Datos de transfermovil -->
         <div id="transfermovil-payment" style="display: none;">
           <div class="form-group">
-            <label>Tarjeta</label>
+            <label>Celular</label>
             <input type="tel" placeholder="+53 5 XXXXXXX">
+            
           </div>
           <div class="form-group">
             <label>Confirmar Número</label>
@@ -671,5 +672,6 @@ document.addEventListener('DOMContentLoaded', loadOrderData);
 <!-- Theme Toggle Script -->
 <script src="theme-toggle.js"></script>
 
+  <script src="site-enhancements.js" defer></script>
 </body>
 </html>

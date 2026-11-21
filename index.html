@@ -43,11 +43,11 @@
   <link rel="stylesheet" href="styles.css">
   
   <!-- Chatbot JavaScript - Carga directa y ordenada -->
-  <script src="boot/knowledgeBase.js"></script>
-  <script src="boot/troubleshooting.js"></script>
-  <script src="boot/learningSystem.js"></script>
-  <script src="boot/externalKnowledge.js"></script>
-  <script src="boot/chatbot.js"></script>
+  <script src="boot/knowledgeBase.js" defer></script>
+  <script src="boot/troubleshooting.js" defer></script>
+  <script src="boot/learningSystem.js" defer></script>
+  <script src="boot/externalKnowledge.js" defer></script>
+  <script src="boot/chatbot.js" defer></script>
   
   <!-- Animaciones funcionales -->
   <style>
@@ -1279,24 +1279,6 @@
 <!-- Toast notification -->
 <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
-<!-- Floating Action Buttons -->
-<div class="fab-container">
-  <div class="fab-menu" id="fabMenu">
-    <button class="fab-item" onclick="window.location.href='tel:+5351885523'" title="Llamar ahora">
-      <i class="fas fa-phone"></i>
-    </button>
-    <button class="fab-item" onclick="window.location.href='#contacto'" title="Contacto">
-      <i class="fas fa-envelope"></i>
-    </button>
-    <button class="fab-item" onclick="window.location.href='#servicios'" title="Servicios">
-      <i class="fas fa-fire"></i>
-    </button>
-  </div>
-  <button class="fab" id="fabMain" onclick="toggleFabMenu()" title="Menú rápido">
-    <i class="fas fa-plus"></i>
-  </button>
-</div>
-
 <!-- JavaScript -->
 <script src="script.js"></script>
 
@@ -1399,22 +1381,6 @@ function showSearchAlert(message) {
 }
 
 // Toggle FAB menu
-function toggleFabMenu() {
-  const fabMenu = document.getElementById('fabMenu');
-  const fabMain = document.getElementById('fabMain');
-  const icon = fabMain.querySelector('i');
-  
-  fabMenu.classList.toggle('active');
-  
-  if (fabMenu.classList.contains('active')) {
-    icon.className = 'fas fa-times';
-    fabMain.style.transform = 'rotate(45deg)';
-  } else {
-    icon.className = 'fas fa-plus';
-    fabMain.style.transform = 'rotate(0deg)';
-  }
-}
-
 // Scroll progress bar
 function updateScrollProgress() {
   const scrollTop = window.pageYOffset;
@@ -1521,18 +1487,7 @@ document.addEventListener('DOMContentLoaded', function() {
     handleScrollReveal();
     updateScrollProgress();
   });
-  
-  // Cerrar FAB menu al hacer clic fuera
-  document.addEventListener('click', function(event) {
-    const fabContainer = document.querySelector('.fab-container');
-    const fabMenu = document.getElementById('fabMenu');
-    
-    if (!fabContainer.contains(event.target) && fabMenu.classList.contains('active')) {
-      toggleFabMenu();
-    }
-  });
-  
-  // Animación de partículas interactivas
+// Animación de partículas interactivas
   document.addEventListener('mousemove', (e) => {
     const particles = document.querySelectorAll('.particle');
     const mouseX = e.clientX;
@@ -1645,23 +1600,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     <div class="chatbot-messages" id="chatbotMessages">
       <div class="chatbot-message bot">
-        <p>¡Hola! 👋 Soy tu asistente virtual de CUPET Las Tunas. Estoy aquí para ayudarte con cualquier duda sobre nuestros servicios, precios, transferencias o pagos.</p>
-        <p>¿En qué puedo servirte hoy? Puedes hacer clic en las opciones rápidas o escribir tu pregunta directamente. 😊</p>
+        <p>¡Hola! 👋 Soy el asistente virtual de CUPET Comercialización Las Tunas.</p>
+        <p>Puedo orientarte sobre combustibles, GLP, lubricantes, pedidos y distribución. Cuéntame qué necesitas; puedes escribir con tus propias palabras. 😊</p>
       </div>
     </div>
     
-    <div class="chatbot-quick-replies" id="quickReplies">
-      <button class="chatbot-quick-reply" data-message="¿Cuáles son los precios actuales?">💰 Precios</button>
-      <button class="chatbot-quick-reply" data-message="¿Qué ofrecen de GLP?">🔥 GLP</button>
-      <button class="chatbot-quick-reply" data-message="¿Cómo puedo contactarlos?">📞 Contacto</button>
-      <button class="chatbot-quick-reply" data-message="¿Qué servicios ofrecen?">🔧 Servicios</button>
-      <button class="chatbot-quick-reply" data-message="¿Cómo realizo una transferencia?">💸 Transferencias</button>
-      <button class="chatbot-quick-reply" data-message="¿Cómo consulto mi saldo?">💰 Saldo</button>
-      <button class="chatbot-quick-reply" data-message="¿Cómo pago mis facturas?">💳 Pagos</button>
-      <button class="chatbot-quick-reply" data-message="¿Cómo protejo mi cuenta?">🔒 Seguridad</button>
-      <button class="chatbot-quick-reply" data-message="¿Qué créditos ofrecen?">🏦 Créditos</button>
-      <button class="chatbot-quick-reply" data-message="¿Sobre CUPET?">🏢 Empresa</button>
-      <button class="chatbot-quick-reply" data-message="¿Especificaciones técnicas?">⚙️ Técnico</button>
+    <div class="chatbot-quick-replies" id="quickReplies" aria-label="Sugerencias de consulta">
+      <button type="button" class="chatbot-quick-reply" data-message="¿Qué productos ofrecen?">Productos</button>
+      <button type="button" class="chatbot-quick-reply" data-message="¿Cómo puedo realizar un pedido?">Cómo hacer un pedido</button>
+      <button type="button" class="chatbot-quick-reply" data-message="¿Ofrecen servicio de entrega?">Entregas</button>
     </div>
     
     <div class="chatbot-input-container">
@@ -1674,458 +1621,7 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
 
-<!-- Inicialización simple y directa del chatbot -->
-<script>
-// Inicialización directa del chatbot
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('Iniciando chatbot...');
-  
-  // Esperar a que los scripts carguen
-  setTimeout(function() {
-    initializeSimpleChatbot();
-  }, 500);
-  
-  function initializeSimpleChatbot() {
-    const chatbotToggle = document.getElementById('chatbotToggle');
-    const chatbotWindow = document.getElementById('chatbotWindow');
-    const chatbotClose = document.getElementById('chatbotClose');
-    
-    console.log('Elementos encontrados:', {
-      toggle: !!chatbotToggle,
-      window: !!chatbotWindow,
-      close: !!chatbotClose
-    });
-    
-    if (!chatbotToggle || !chatbotWindow) {
-      console.error('No se encontraron los elementos del chatbot');
-      return;
-    }
-    
-    let isOpen = false;
-    
-    // Función toggle
-    function toggleChat() {
-      console.log('Toggle chat - antes:', isOpen);
-      isOpen = !isOpen;
-      
-      if (isOpen) {
-        chatbotWindow.classList.add('active');
-        chatbotToggle.innerHTML = '<i class="fas fa-minus"></i>';
-        console.log('Chat abierto');
-      } else {
-        chatbotWindow.classList.remove('active');
-        chatbotToggle.innerHTML = '<i class="fas fa-comments"></i>';
-        console.log('Chat cerrado');
-      }
-    }
-    
-    // Agregar event listeners
-    chatbotToggle.addEventListener('click', function(e) {
-      console.log('Click en toggle button');
-      e.preventDefault();
-      toggleChat();
-    });
-    
-    if (chatbotClose) {
-      chatbotClose.addEventListener('click', function(e) {
-        console.log('Click en close button');
-        e.preventDefault();
-        toggleChat();
-      });
-    }
-    
-    // Manejar botones de respuesta rápida
-    const quickReplies = document.getElementById('quickReplies');
-    if (quickReplies) {
-      quickReplies.addEventListener('click', function(e) {
-        if (e.target.classList.contains('chatbot-quick-reply')) {
-          const message = e.target.getAttribute('data-message');
-          if (message) {
-            console.log('Quick reply seleccionado:', message);
-            handleQuickReply(message);
-          }
-        }
-      });
-    }
-    
-    // Manejar input y botón de envío
-    const chatbotInput = document.getElementById('chatbotInput');
-    const chatbotSend = document.getElementById('chatbotSend');
-    
-    if (chatbotInput && chatbotSend) {
-      chatbotSend.addEventListener('click', function() {
-        const message = chatbotInput.value.trim();
-        if (message) {
-          handleUserMessage(message);
-          chatbotInput.value = '';
-        }
-      });
-      
-      chatbotInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          const message = chatbotInput.value.trim();
-          if (message) {
-            handleUserMessage(message);
-            chatbotInput.value = '';
-          }
-        }
-      });
-    }
-    
-    // Función para manejar respuestas rápidas
-    function handleQuickReply(message) {
-      handleUserMessage(message);
-    }
-    
-    // Función para manejar mensajes del usuario
-    function handleUserMessage(message) {
-      const chatbotMessages = document.getElementById('chatbotMessages');
-      if (!chatbotMessages) return;
-      
-      // Mostrar mensaje del usuario
-      const userMessageDiv = document.createElement('div');
-      userMessageDiv.className = 'chatbot-message user';
-      userMessageDiv.textContent = message;
-      chatbotMessages.appendChild(userMessageDiv);
-      
-      // Scroll al fondo
-      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-      
-      // Generar respuesta
-      const response = generateResponse(message);
-      
-      // Mostrar respuesta con un pequeño delay
-      setTimeout(function() {
-        const botMessageDiv = document.createElement('div');
-        botMessageDiv.className = 'chatbot-message bot';
-        botMessageDiv.innerHTML = response;
-        chatbotMessages.appendChild(botMessageDiv);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-      }, 500);
-    }
-    
-    // Generar respuesta más humana y conversacional
-    function generateResponse(message) {
-      const lowerMessage = message.toLowerCase();
-      const greetings = ['¡Entiendo!', '¡Claro que sí!', 'Perfecto', 'Entendido', '¡Por supuesto!'];
-      const transitions = ['Te explico', 'Aquí tienes', 'Te cuento', 'Te informo', 'Te detallo'];
-      const closings = ['¿Te sirve esta información?', '¿Necesitas más detalles?', '¿Alguna otra duda?', '¿Puedo ayudarte en algo más?', '¿Te quedó claro?'];
-      
-      const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-      const transition = transitions[Math.floor(Math.random() * transitions.length)];
-      const closing = closings[Math.floor(Math.random() * closings.length)];
-      
-      // Transferencias
-      if (lowerMessage.includes('transferencia') || lowerMessage.includes('transferir')) {
-        return `<p>${greeting} ${transition} cómo puedes realizar tus transferencias de forma sencilla y segura:</p>
-        <p>Primero, asegúrate de tener saldo suficiente (mínimo 50 CUP). Luego:</p>
-        <ol>
-          <li><strong>Inicia sesión</strong> en tu cuenta de cliente con tus credenciales</li>
-          <li><strong>Ve a la sección</strong> 'Transferencias' en el menú principal</li>
-          <li><strong>Ingresa el número</strong> de cuenta del destinatario (verifícalo bien)</li>
-          <li><strong>Especifica el monto</strong> que deseas transferir (máximo 5,000 CUP diarios)</li>
-          <li><strong>Selecciona el concepto</strong> (ej: pago de combustible, servicios, etc.)</li>
-          <li><strong>Confirma</strong> con tu contraseña o PIN de seguridad</li>
-          <li><strong>¡Listo!</strong> Recibirás tu comprobante digital al instante</li>
-        </ol>
-        <p>💡 <strong>Tip:</strong> Las transferencias entre tus propias cuentas son gratuitas. A terceros aplicamos solo 1.5% por comisión. ${closing}</p>`;
-      }
-      
-      // Saldo
-      if (lowerMessage.includes('saldo') || lowerMessage.includes('consultar')) {
-        return `<p>${greeting} ${transition} las diferentes formas de consultar tu saldo:</p>
-        <p>Entiendo que quieres saber cuánto tienes disponible. Aquí tienes varias opciones:</p>
-        <ul>
-          <li>📱 <strong>App móvil CUPET:</strong> La más rápida y conveniente, disponible 24/7</li>
-          <li>💻 <strong>Portal web:</strong> En www.cupetlasunas.cu, desde cualquier dispositivo</li>
-          <li>🏢 <strong>Nuestras oficinas:</strong> Personalmente con atención al cliente</li>
-          <li>📞 <strong>Por teléfono:</strong> Llama al +53 123 456 789, te atendemos en seguida</li>
-        </ul>
-        <p>El mejor momento para consultar es justo después de una transacción, así te aseguras que el saldo esté actualizado. ${closing}</p>`;
-      }
-      
-      // Pagos
-      if (lowerMessage.includes('pago') || lowerMessage.includes('factura')) {
-        return `<p>${greeting} ${transition} cómo puedes pagar tus facturas de manera fácil y segura:</p>
-        <p>Te entiendo, pagar facturas puede ser tedioso. Por eso te ofrecemos varias opciones:</p>
-        <p><strong>Métodos disponibles:</strong></p>
-        <ul>
-          <li>🏦 <strong>Transferencia bancaria:</strong> Desde tu banco directamente</li>
-          <li>💳 <strong>Tarjeta de crédito/débito:</strong> Rápido y seguro, aceptamos todas</li>
-          <li>📱 <strong>Pago móvil (Transfermóvil):</strong> Muy conveniente desde tu celular</li>
-          <li>💵 <strong>Efectivo:</strong> En nuestras oficinas, si prefieres el pago tradicional</li>
-        </ul>
-        <p>🎁 <strong>Buenas noticias:</strong> Si pagas antes del vencimiento obtienes 5% de descuento. El mismo día del vencimiento: 2%. ¡Vale la pena pagar a tiempo! ${closing}</p>`;
-      }
-      
-      // Bloqueos
-      if (lowerMessage.includes('bloque') || lowerMessage.includes('cuenta')) {
-        return `<p>Entiendo tu preocupación, sé que es frustrante cuando no puedes acceder a tu cuenta. ${transition} qué puede estar pasando y cómo solucionarlo:</p>
-        <p><strong>Causas comunes de bloqueo:</strong></p>
-        <ul>
-          <li>🔐 Múltiples intentos fallidos de contraseña (por seguridad)</li>
-          <li>⚠️ Actividad inusual detectada en tu cuenta</li>
-          <li>📅 Facturas impagas por más de 60 días</li>
-        </ul>
-        <p><strong>Para desbloquear tu cuenta:</strong></p>
-        <ul>
-          <li>📞 Llama al 123-4567, te atenderemos de inmediato</li>
-          <li>🏢 Visita nuestras oficinas con tu identificación</li>
-          <li>💻 Usa la opción "Olvidé mi contraseña" si ese es el caso</li>
-        </ul>
-        <p>💡 <strong>Consejo:</strong> Para evitar futuros bloqueos, usa una contraseña segura y mantén tus pagos al día. ${closing}</p>`;
-      }
-      
-      // GLP
-      if (lowerMessage.includes('glp') || lowerMessage.includes('gas')) {
-        return `<p>${greeting} ${transition} nuestra oferta de GLP (Gas Licuado de Petróleo):</p>
-        <p>Sé que el gas es esencial en tu hogar. Aquí tienes nuestros precios actuales:</p>
-        <ul>
-          <li>🔥 <strong>Cilindro 10kg:</strong> $1,850.00 CUP - Ideal para uso doméstico básico</li>
-          <li>🔥 <strong>Cilindro 20kg:</strong> $3,500.00 CUP - El más popular para familias</li>
-          <li>🔥 <strong>Cilindro 43kg:</strong> $7,200.00 CUP - Para uso intensivo o comercial</li>
-        </ul>
-        <p><strong>Servicios que ofrecemos:</strong></p>
-        <ul>
-          <li>🚛 <strong>Recarga a domicilio:</strong> Te llevamos el gas directo a casa</li>
-          <li>🔄 <strong>Intercambio de cilindros:</strong> Cambia tu vacío por uno lleno</li>
-          <li>🔧 <strong>Instalación y mantenimiento:</strong> Servicio técnico certificado</li>
-        </ul>
-        <p>💡 <strong>Tip:</strong> Si consumes mucho gas, el cilindro de 43kg te sale más económico por kilo. ${closing}</p>`;
-      }
-      
-      // Precios
-      if (lowerMessage.includes('precio') || lowerMessage.includes('costo')) {
-        return `<p>${greeting} ${transition} los precios actuales de nuestros combustibles:</p>
-        <p>Entiendo que quieres planificar tu presupuesto. Aquí tienes los precios por litro:</p>
-        <ul>
-          <li>⛽ <strong>Gasolina Regular:</strong> $145.00 CUP - Para vehículos cotidianos</li>
-          <li>⛽ <strong>Gasolina Especial:</strong> $165.00 CUP - Mejor rendimiento para autos modernos</li>
-          <li>🚛 <strong>Diésel:</strong> $125.00 CUP - Para vehículos pesados y maquinaria</li>
-          <li>✈️ <strong>Keroseno:</strong> $135.00 CUP - Para aviación e industria</li>
-        </ul>
-        <p>📌 <strong>Nota importante:</strong> Los precios pueden variar según las regulaciones oficiales. Te recomiendo verificarlos en nuestras estaciones para tener el precio más actualizado.</p>
-        <p>💡 <strong>Ahorro:</strong> Si eres cliente frecuente, puedes obtener hasta 15% de descuento en compras mayores. ${closing}</p>`;
-      }
-      
-      // Contacto
-      if (lowerMessage.includes('contacto') || lowerMessage.includes('teléfono')) {
-        return `<p>${greeting} ${transition} cómo puedes ponerte en contacto con nosotros:</p>
-        <p>Estamos aquí para atenderte cuando lo necesites. Aquí tienes nuestras vías de contacto:</p>
-        <ul>
-          <li>📞 <strong>Teléfono:</strong> +53 123 456 789 - Te atendemos 24 horas</li>
-          <li>📧 <strong>Email:</strong> info@cupetlasunas.cu - Respondemos en menos de 24 horas</li>
-          <li>📍 <strong>Dirección:</strong> Las Tunas, Cuba - Visítanos, te atenderemos con gusto</li>
-          <li>🕐 <strong>Horario:</strong> Atención 24 horas, 7 días a la semana</li>
-        </ul>
-        <p>💡 <strong>Consejo:</strong> Para urgencias, te recomiendo llamar directamente. Es la forma más rápida de obtener ayuda. ${closing}</p>`;
-      }
-      
-      // Servicios
-      if (lowerMessage.includes('servicio')) {
-        return `<p><strong>🔧 Nuestros Servicios:</strong></p>
-        <ul>
-          <li>Combustibles líquidos</li>
-          <li>GLP (Gas Licuado)</li>
-          <li>Lubricantes industriales</li>
-          <li>Autoservicio 24h</li>
-          <li>Distribución a domicilio</li>
-        </ul>`;
-      }
-      
-      // Seguridad de cuenta
-      if (lowerMessage.includes('seguridad') || lowerMessage.includes('contraseña') || lowerMessage.includes('autenticacion') || lowerMessage.includes('dos factores')) {
-        return `<p><strong>🔒 Seguridad de tu Cuenta:</strong></p>
-        <p><strong>Requisitos de contraseña:</strong></p>
-        <ul>
-          <li>Mínimo 8 caracteres</li>
-          <li>Al menos una mayúscula y minúscula</li>
-          <li>Al menos un número</li>
-          <li>Al menos un carácter especial (!@#$%&*)</li>
-        </ul>
-        <p><strong>Autenticación de dos factores:</strong></p>
-        <ul>
-          <li>SMS al celular registrado</li>
-          <li>App de autenticación</li>
-          <li>Email de verificación</li>
-          <li>Pregunta de seguridad</li>
-        </ul>
-        <p>💡 <strong>Tip:</strong> Cambia tu contraseña cada 3 meses y nunca la compartas con nadie.</p>`;
-      }
-      
-      // Finanzas y créditos
-      if (lowerMessage.includes('credito') || lowerMessage.includes('financiamiento') || lowerMessage.includes('prestamo') || lowerMessage.includes('interes')) {
-        return `<p><strong>🏦 Créditos y Financiamiento:</strong></p>
-        <p><strong>Tipos de crédito disponibles:</strong></p>
-        <ul>
-          <li>Crédito rotativo</li>
-          <li>Crédito de consumo</li>
-          <li>Crédito corporativo</li>
-          <li>Línea de crédito</li>
-          <li>Financiamiento de equipos</li>
-        </ul>
-        <p><strong>Tasas de interés:</strong></p>
-        <ul>
-          <li>Clientes nuevos: 8-12% anual</li>
-          <li>Clientes frecuentes: 5-8% anual</li>
-          <li>Clientes corporativos: 3-6% anual</li>
-          <li>Promociones: 0% por períodos limitados</li>
-        </ul>
-        <p><strong>Plazos de pago:</strong> 3, 6, 12, 24 y 36 meses según el monto.</p>`;
-      }
-      
-      // Soporte técnico
-      if (lowerMessage.includes('soporte') || lowerMessage.includes('ayuda') || lowerMessage.includes('problema') || lowerMessage.includes('error')) {
-        return `<p><strong>🛠️ Soporte Técnico CUPET:</strong></p>
-        <p><strong>Canales de atención:</strong></p>
-        <ul>
-          <li>📞 Teléfono: +53 123 456 789 (24/7)</li>
-          <li>📧 Email: soporte@cupetlasunas.cu</li>
-          <li>💬 Chat en vivo en web</li>
-          <li>📱 WhatsApp: +53 123 456 789</li>
-          <li>🏢 Oficinas presenciales</li>
-        </ul>
-        <p><strong>Tiempos de respuesta:</strong></p>
-        <ul>
-          <li>Urgente: 15 minutos</li>
-          <li>Alta: 1 hora</li>
-          <li>Media: 4 horas</li>
-          <li>Baja: 24 horas</li>
-        </ul>`;
-      }
-      
-      // Información corporativa
-      if (lowerMessage.includes('empresa') || lowerMessage.includes('cupet') || lowerMessage.includes('historia') || lowerMessage.includes('mision') || lowerMessage.includes('vision')) {
-        return `<p><strong>🏢 Sobre CUPET Las Tunas:</strong></p>
-        <p><strong>Datos de la empresa:</strong></p>
-        <ul>
-          <li>Fundación: 1992</li>
-          <li>Empleados: 500+</li>
-          <li>Estaciones: 25 en Las Tunas</li>
-          <li>Clientes: 30,000+</li>
-          <li>Certificaciones: ISO 9001, ISO 14001, OHSAS 18001</li>
-        </ul>
-        <p><strong>Misión:</strong> Garantizar el suministro de energía a Cuba con calidad, seguridad y sostenibilidad.</p>
-        <p><strong>Visión:</strong> Ser líderes en distribución de energía en el Caribe.</p>
-        <p><strong>Valores:</strong> Compromiso con la calidad, seguridad, sostenibilidad, excelencia en el servicio e integridad.</p>`;
-      }
-      
-      // Información técnica
-      if (lowerMessage.includes('especificacion') || lowerMessage.includes('tecnico') || lowerMessage.includes('densidad') || lowerMessage.includes('octanaje')) {
-        return `<p><strong>⚙️ Información Técnica:</strong></p>
-        <p><strong>Combustibles:</strong></p>
-        <ul>
-          <li>Densidad: 0.72-0.78 g/cm³</li>
-          <li>Punto de inflamación: -40°C a -20°C</li>
-          <li>Contenido de azufre: <10 ppm</li>
-          <li>Índice de octanaje: 87-92</li>
-          <li>Poder calorífico: 44-46 MJ/kg</li>
-        </ul>
-        <p><strong>GLP:</strong></p>
-        <ul>
-          <li>Composición: Propano 60%, Butano 40%</li>
-          <li>Presión de operación: 15-20 bar</li>
-          <li>Pureza: >99%</li>
-          <li>Punto de inflamación: -104°C</li>
-        </ul>`;
-      }
-      
-      // Comparaciones
-      if (lowerMessage.includes('comparar') || lowerMessage.includes('diferencia') || lowerMessage.includes('mejor') || lowerMessage.includes('cual es mejor')) {
-        return `<p><strong>📊 Comparaciones de Productos:</strong></p>
-        <p><strong>Gasolina Regular vs Especial:</strong></p>
-        <ul>
-          <li>Diferencia principal: Índice de octanaje (87 vs 92)</li>
-          <li>Rendimiento: Especial mejora eficiencia 5-10%</li>
-          <li>Costo: Regular 15-20% más económica</li>
-          <li>Recomendación: Especial para autos modernos</li>
-        </ul>
-        <p><strong>Diesel vs Gasolina:</strong></p>
-        <ul>
-          <li>Eficiencia: Diesel 30-40% más eficiente</li>
-          <li>Mantenimiento: Diesel requiere menos mantenimiento</li>
-          <li>Costo: Diesel generalmente más económico</li>
-          <li>Uso: Diesel para vehículos pesados</li>
-        </ul>`;
-      }
-      
-      // Calculadoras
-      if (lowerMessage.includes('calcular') || lowerMessage.includes('cuanto') || lowerMessage.includes('costo viaje') || lowerMessage.includes('gasto')) {
-        return `<p><strong>🧮 Calculadoras Útiles:</strong></p>
-        <p><strong>Consumo de combustible:</strong></p>
-        <p>Fórmula: (km recorridos / consumo por 100km) * precio litro</p>
-        <p>Ejemplo: Si recorre 500km con consumo 10L/100km y gasolina a 145 CUP: (500/10)*145 = 7,250 CUP</p>
-        <p><strong>Ahorro por descuento:</strong></p>
-        <p>Fórmula: Monto * (Porcentaje descuento / 100)</p>
-        <p>Ejemplo: Factura de 1,000 CUP con 5% descuento: 1,000 * 0.05 = 50 CUP de ahorro</p>
-        <p>💡 <strong>Tip:</strong> Puedo ayudarte a calcular si me das los datos específicos de tu viaje o factura.</p>`;
-      }
-      
-      // Respuestas de agradecimiento
-      if (lowerMessage.includes('gracias') || lowerMessage.includes('muchas gracias') || lowerMessage.includes('genial')) {
-        const thanksResponses = [
-          '¡De nada! Ha sido un placer ayudarte. ¿Necesitas algo más?',
-          '¡Me alegra haber podido ayudarte! Estoy aquí para lo que necesites.',
-          '¡Gracias a ti por confiar en CUPET! ¿En qué más puedo servirte?',
-          '¡Excelente! Si tienes más preguntas, aquí estaré esperándote.',
-          '¡Por nada! Tu satisfacción es nuestra prioridad. ¿Alguna otra duda?'
-        ];
-        return `<p>${thanksResponses[Math.floor(Math.random() * thanksResponses.length)]}</p>`;
-      }
-      
-      // Respuestas de saludo
-      if (lowerMessage.includes('hola') || lowerMessage.includes('buenos') || lowerMessage.includes('buenas') || lowerMessage.includes('hey')) {
-        const helloResponses = [
-          '¡Hola! Bienvenido a CUPET Las Tunas. ¿En qué puedo ayudarte hoy?',
-          '¡Buenos días/tardes! Soy tu asistente virtual. ¿Qué necesitas saber?',
-          '¡Hola! Me alegra verte. ¿Tienes alguna pregunta sobre nuestros servicios?',
-          '¡Hey! Soy tu asistente de CUPET. ¿En qué puedo servirte hoy?'
-        ];
-        return `<p>${helloResponses[Math.floor(Math.random() * helloResponses.length)]}</p>`;
-      }
-      
-      // Respuesta por defecto más amigable
-      const defaultResponses = [
-        `Hmm, no estoy seguro de haber entendido bien tu pregunta. ${transition} en qué puedo ayudarte:`,
-        `Interesante pregunta. Déjame ver... ${transition} las áreas donde puedo asistirte:`,
-        `¡Buena pregunta! ${transition} los temas sobre los que puedo informarte:`
-      ];
-      
-      return `<p>${defaultResponses[Math.floor(Math.random() * defaultResponses.length)]}</p>
-        <ul>
-          <li>💸 <strong>Transferencias:</strong> Cómo enviar dinero entre cuentas</li>
-          <li>💰 <strong>Saldo:</strong> Consultar tu saldo disponible</li>
-          <li>💳 <strong>Pagos:</strong> Pagar tus facturas y servicios</li>
-          <li>⛽ <strong>Precios:</strong> Información de combustibles y GLP</li>
-          <li>🔧 <strong>Servicios:</strong> Todo lo que ofrecemos</li>
-          <li>🔒 <strong>Ayuda:</strong> Problemas con tu cuenta</li>
-        </ul>
-        <p>¿Alguna de estas opciones es lo que buscas? ${closing}</p>`;
-    }
-    
-    // Cerrar al hacer clic fuera
-    document.addEventListener('click', function(e) {
-      if (isOpen && 
-          !chatbotToggle.contains(e.target) && 
-          !chatbotWindow.contains(e.target)) {
-        toggleChat();
-      }
-    });
-    
-    console.log('Chatbot inicializado correctamente');
-    
-    // Probar si el chatbot principal está disponible
-    if (window.chatbot) {
-      console.log('Chatbot principal encontrado');
-    } else {
-      console.log('Usando chatbot simple');
-    }
-  }
-});
-</script>
-
-<!-- Theme Toggle Script -->
-<script src="theme-toggle.js"></script>
-
+<!-- El chatbot se inicializa únicamente desde boot/chatbot.js para evitar eventos duplicados. -->
+  <script src="site-enhancements.js" defer></script>
 </body>
 </html>
