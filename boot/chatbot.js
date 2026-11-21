@@ -6,6 +6,7 @@ class Chatbot {
       
       this.isOpen = false;
       this.isTyping = false;
+      this.lastTopic = null;
       this.fallbackMode = false;
       this.capabilities = this.detectCapabilities();
       
@@ -432,6 +433,7 @@ class Chatbot {
       response.push("");
     }
     
+    response.push('Los valores mostrados proceden de la información local del prototipo; pueden no coincidir con precios vigentes y no se actualizan en tiempo real.');
     return response;
   }
   
@@ -1072,8 +1074,10 @@ class Chatbot {
     
     // Quick replies
     this.quickReplies.addEventListener('click', (e) => {
-      if (e.target.classList.contains('chatbot-quick-reply')) {
-        const message = e.target.getAttribute('data-message');
+      const button = e.target.closest('.chatbot-quick-reply');
+      if (!button || !this.quickReplies.contains(button)) return;
+      const message = button.getAttribute('data-message');
+      if (message) {
         this.chatbotInput.value = message;
         this.sendMessage();
       }
@@ -1117,7 +1121,7 @@ class Chatbot {
       this.hideTyping();
       const response = this.generateResponse(message);
       this.addMessage(response, 'bot');
-    }, 1000 + Math.random() * 1000);
+    }, 250 + Math.random() * 200);
   }
   
   addMessage(message, sender) {
@@ -1126,27 +1130,20 @@ class Chatbot {
     
     if (Array.isArray(message)) {
       message.forEach((line, index) => {
-        if (index === 0) {
-          const processedLine = this.processFormatting(line);
-          messageDiv.innerHTML = processedLine;
-        } else {
-          const lineBreak = document.createElement('br');
-          messageDiv.appendChild(lineBreak);
-          const processedLine = this.processFormatting(line);
-          const span = document.createElement('span');
-          span.innerHTML = processedLine;
-          messageDiv.appendChild(span);
-        }
+        if (index > 0) messageDiv.appendChild(document.createElement('br'));
+        const span = document.createElement('span');
+        span.innerHTML = this.processFormatting(String(line ?? ''));
+        messageDiv.appendChild(span);
       });
     } else {
-      messageDiv.innerHTML = this.processFormatting(message);
+      messageDiv.innerHTML = this.processFormatting(String(message ?? ''));
     }
     
     this.chatbotMessages.appendChild(messageDiv);
     
     // Scroll solo hasta mostrar la primera palabra de la respuesta
     if (sender === 'bot') {
-      this.scrollToFirstWord();
+      this.scrollToBottom();
     }
   }
   
@@ -1156,10 +1153,12 @@ class Chatbot {
       return text || '';
     }
     
-    // Convert markdown-like formatting to HTML
-    let processedText = text;
-    
-    // Bold text: **text** -> <strong>text</strong>
+    // Escapar HTML antes de aplicar el formato permitido para evitar inyección de código.
+    let processedText = text.replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+
+    // Negrita sencilla: **texto** -> <strong>texto</strong>
     processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     
     // Convert bullet points starting with • to proper list items
@@ -1199,60 +1198,69 @@ class Chatbot {
   }
   
   generateResponse(message) {
-    const lowerMessage = message.toLowerCase();
-    
-    // Primero verificar si es una emergencia (usando learningSystem)
-    const emergency = this.learningSystem.detectEmergency(message);
-    if (emergency.detected) {
-      return this.learningSystem.getEmergencyResponse(emergency.type);
+    const original = String(message || '').trim();
+    const lowerMessage = original.toLocaleLowerCase('es');
+    const normalized = lowerMessage.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/^[¿¡\s]+|[?!.\s]+$/g, '');
+
+    // Conversación cotidiana: se atiende antes de buscar palabras clave.
+    if (/^(hola|hol[aá]|buenos dias|buenas tardes|buenas noches|buenas|hey|que tal|saludos)[!?.\s]*$/i.test(normalized)) {
+      return '¡Hola! 😊 Qué gusto saludarte. Soy el asistente virtual de CUPET Comercialización Las Tunas. ¿Qué necesitas consultar hoy?';
     }
-    
-    // Buscar respuestas aprendidas primero (usando learningSystem)
-    const learnedResponse = this.getLearnedResponse(lowerMessage);
-    if (learnedResponse) {
-      return learnedResponse;
+    if (/^(gracias|muchas gracias|mil gracias|te lo agradezco|genial|perfecto)[!?.\s]*$/i.test(normalized)) {
+      return '¡De nada! Me alegra haberte ayudado. Si te surge otra duda sobre nuestros productos o servicios, aquí estoy.';
     }
-    
-    // Verificar si es un problema de servicio al cliente
-    if (this.isProblemaServicio(lowerMessage)) {
-      return this.handleProblemaServicio(lowerMessage);
+    if (/^(adios|hasta luego|nos vemos|chao|bye|que tengas buen dia)[!?.\s]*$/i.test(normalized)) {
+      return '¡Hasta luego! Gracias por visitar CUPET Comercialización Las Tunas. Que tengas un excelente día. 👋';
     }
-    
-    // Verificar si es un problema técnico (usando troubleshooting)
-    if (this.isProblemaTecnico(lowerMessage)) {
-      return this.handleProblemaTecnico(lowerMessage);
+    if (/^(quien eres|que eres|como te llamas|eres una persona)[?!.\s]*$/i.test(normalized)) {
+      return 'Soy el asistente virtual de CUPET Comercialización Las Tunas. No soy una persona, pero puedo orientarte sobre combustibles, GLP, lubricantes, pedidos y distribución.';
     }
-    
-    // Búsqueda inteligente basada en la base de conocimientos principal
-    const keywords = this.extractKeywords(lowerMessage);
-    const category = this.detectCategoryFromKeywords(keywords);
-    
-    // Responder según la categoría detectada
-    switch(category) {
-      case 'productos':
-        return this.responses.productos;
-      case 'horarios':
-        return this.responses.horarios;
-      case 'compras':
-        return this.responses.comprar;
-      case 'ubicacion':
-        return this.responses.ubicacion;
-      case 'precios':
-        return this.responses.precios;
-      case 'glp':
-        return this.responses.glp;
-      case 'contacto':
-        return this.responses.contacto;
-      case 'servicios':
-        return this.responses.servicios;
-      case 'problemas':
-        return this.handleProblemaTecnico(lowerMessage);
+    if (/^(como estas|que haces|estas ahi|me puedes ayudar)[?!.\s]*$/i.test(normalized)) {
+      return '¡Estoy aquí y listo para ayudarte! 😊 Cuéntame qué necesitas y buscamos la información juntos.';
+    }
+
+    // No atribuir a CUPET servicios bancarios que no forman parte de esta web.
+    if (/transferencia|transferir dinero|consultar saldo|recargar saldo|credito bancario|tarjeta bancaria/.test(normalized)) {
+      return 'En esta página no se gestionan transferencias bancarias, saldos ni créditos. Puedo ayudarte con la información de combustibles, GLP, lubricantes, pedidos y distribución. ¿Cuál de esos temas te interesa?';
+    }
+
+    // Las emergencias tienen prioridad sobre las respuestas generales.
+    const emergency = this.learningSystem?.detectEmergency?.(original);
+    if (emergency?.detected) {
+      return this.learningSystem.getEmergencyResponse(emergency.type) || 'Si existe una fuga de gas, aléjate del lugar, evita encender interruptores o llamas y contacta inmediatamente con los servicios de emergencia.';
+    }
+
+    const learnedResponse = this.getLearnedResponse(normalized);
+    if (learnedResponse) return learnedResponse;
+
+    if (this.isProblemaServicio(normalized)) return this.handleProblemaServicio(normalized);
+    if (this.isProblemaTecnico(normalized)) return this.handleProblemaTecnico(normalized);
+
+    const keywords = this.extractKeywords(normalized);
+    let category = this.detectCategoryFromKeywords(keywords);
+
+    // Comprende seguimientos breves como «¿y cuánto cuesta?» o «¿cómo lo pido?».
+    if (!category && this.lastTopic && /^(y |tambien|también|ese|esa|eso|ese mismo|me interesa|cuanto|cuánto|como|cómo|donde|dónde|cual|cuál)/i.test(normalized)) {
+      category = this.lastTopic;
+    }
+
+    if (category) this.lastTopic = category;
+
+    switch (category) {
+      case 'productos': return this.responses.productos;
+      case 'horarios': return this.responses.horarios;
+      case 'compras': return this.responses.comprar;
+      case 'ubicacion': return this.responses.ubicacion;
+      case 'precios': return this.responses.precios;
+      case 'glp': return this.responses.glp;
+      case 'contacto': return this.responses.contacto;
+      case 'servicios': return this.responses.servicios;
+      case 'problemas': return this.handleProblemaTecnico(normalized);
       default:
-        // Búsqueda específica si no hay categoría clara
-        return this.searchInAllKnowledgeBases(keywords);
+        return this.searchInAllKnowledgeBases(keywords) || 'No estoy seguro de haber entendido tu pregunta. ¿Podrías explicármela de otra manera? También puedes preguntarme por combustibles, GLP, lubricantes, pedidos o entregas.';
     }
   }
-  
+
   // Búsqueda en todas las bases de conocimiento
   searchInAllKnowledgeBases(keywords) {
     // 1. Buscar en troubleshooting para problemas técnicos
@@ -1564,32 +1572,25 @@ class Chatbot {
   // Detectar si es un problema técnico
   isProblemaTecnico(message) {
     const problemasKeywords = [
-      'problema', 'fuga', 'no arranca', 'no enciende', 'llama', 'humo', 
-      'ruido', 'gotea', 'bajo', 'alto', 'no funciona', 'avería', 'averia',
-      'dañado', 'roto', 'falla', 'defecto', 'emergencia', 'urgente',
-      'consumo', 'aceite', 'negro', 'recalentamiento', 'temperatura'
+      'tengo una fuga', 'hay una fuga', 'huele a gas', 'se escapa el gas',
+      'no arranca', 'no enciende', 'no funciona', 'está dañado', 'esta danado',
+      'se rompió', 'se rompio', 'hace ruido', 'sale humo', 'se recalienta',
+      'pierde combustible', 'pierde aceite', 'gotea', 'avería', 'averia',
+      'presenta una falla', 'tiene una falla', 'está fallando', 'esta fallando'
     ];
-    
     return problemasKeywords.some(keyword => message.includes(keyword));
   }
-  
-  // Detectar si es un problema de servicio al cliente
   isProblemaServicio(message) {
     const servicioKeywords = [
-      'pago', 'pagar', 'realizar pago', 'como pagar', 'no se como pagar', 'método de pago',
-      'comprar', 'compra', 'pedido', 'realizar pedido', 'hacer pedido', 'solicitar',
-      'registrarse', 'registro', 'cuenta', 'crear cuenta', 'iniciar sesión',
-      'entrega', 'recibir', 'envío', 'distribución', 'tiempo de entrega',
-      'factura', 'comprobante', 'recibo', 'documentación', 'requisitos',
-      'ayuda', 'soporte', 'asistencia', 'duda', 'consulta', 'orientación',
-      'formulario', 'solicitud', 'trámite', 'proceso', 'procedimiento',
-      'contactar', 'llamar', 'escribir', 'comunicarse', 'hablar',
-      'problema', 'dificultad', 'inconveniente', 'error', 'falla'
+      'pago', 'pagar', 'método de pago', 'metodo de pago',
+      'comprar', 'compra', 'pedido', 'solicitar', 'registrarse', 'registro',
+      'crear cuenta', 'iniciar sesión', 'iniciar sesion', 'entrega', 'recibir',
+      'envío', 'envio', 'distribución', 'distribucion', 'factura', 'comprobante',
+      'recibo', 'documentación', 'documentacion', 'formulario', 'trámite', 'tramite',
+      'contactar', 'comunicarse', 'soporte', 'asistencia'
     ];
-    
     return servicioKeywords.some(keyword => message.includes(keyword));
   }
-  
   // Manejar problemas de servicio al cliente
   handleProblemaServicio(message) {
     const lowerMessage = message.toLowerCase();
@@ -1624,197 +1625,58 @@ class Chatbot {
   }
   
   // Ayuda con pagos
-  getPaymentHelp(message) {
-    const procesos = this.knowledgeBase.procesos;
-    const servicios = this.knowledgeBase.servicios.venta_combustibles;
-    
+  getPaymentHelp() {
     return [
-      '💳 **Ayuda con Pagos:**',
+      '💳 **Sobre el pago**',
       '',
-      '🔹 **Métodos de Pago Disponibles:**',
-      `• ${servicios.metodos_pago.join(', ')}`,
+      'La página de pago de este proyecto permite recorrer un proceso de demostración. Puedes revisar el resumen del pedido y ver las opciones que aparecen en pantalla.',
       '',
-      '🔹 **Proceso de Pago por Compra Online:**',
-      ...procesos.compra_online.pasos,
+      'Importante: el prototipo no está conectado a una pasarela bancaria y no realiza cobros reales. No introduzcas números de tarjetas reales ni datos financieros sensibles.',
       '',
-      `⏱️ Tiempo de procesamiento: ${procesos.compra_online.tiempo_procesamiento}`,
-      '',
-      '🔹 **Proceso de Pago por Compra Telefónica:**',
-      ...procesos.compra_telefonica.pasos,
-      '',
-      `⏱️ Tiempo de procesamiento: ${procesos.compra_telefonica.tiempo_procesamiento}`,
-      '',
-      '🔹 **Proceso de Pago Presencial:**',
-      ...procesos.compra_presencial.pasos,
-      '',
-      `⏱️ Tiempo de espera: ${procesos.compra_presencial.tiempo_espera}`,
-      '',
-      '📞 **¿Necesitas ayuda con un pago específico?**',
-      '• Llama a Ventas: (53) 31-xxxxxx ext. 101',
-      '• WhatsApp: +53 5xxxxxxx',
-      '• Email: ventas@cupet.cu',
-      '',
-      '💡 **Consejo:** Ten listos tus documentos de identificación y método de pago antes de iniciar.'
+      'Si quieres, puedo explicarte cómo llegar al resumen de tu pedido.'
     ];
   }
-  
-  // Ayuda con compras/pedidos
-  getPurchaseHelp(message) {
-    const procesos = this.knowledgeBase.procesos;
-    const servicios = this.knowledgeBase.servicios;
-    
+  getPurchaseHelp() {
     return [
-      '🛒 **Ayuda con Compras y Pedidos:**',
+      '🛒 **Cómo recorrer un pedido en la web**',
       '',
-      '🔹 **Opciones para Comprar:**',
+      '1. Inicia sesión o crea una cuenta de demostración.',
+      '2. Entra en el panel del cliente.',
+      '3. Abre el catálogo de combustibles, GLP o lubricantes.',
+      '4. Selecciona los productos y las cantidades disponibles en la interfaz.',
+      '5. Revisa el carrito y continúa al resumen de pago.',
+      '6. Completa el flujo de demostración para ver la confirmación.',
       '',
-      '**1. Compra Online:**',
-      ...procesos.compra_online.pasos,
-      `• Tiempo: ${procesos.compra_online.tiempo_procesamiento}`,
-      `• Métodos de pago: ${procesos.compra_online.metodos_pago.join(', ')}`,
-      '',
-      '**2. Compra Telefónica:**',
-      ...procesos.compra_telefonica.pasos,
-      `• Tiempo: ${procesos.compra_telefonica.tiempo_procesamiento}`,
-      `• Horario: ${procesos.compra_telefonica.horario_atencion}`,
-      '',
-      '**3. Compra Presencial:**',
-      ...procesos.compra_presencial.pasos,
-      `• Tiempo: ${procesos.compra_presencial.tiempo_espera}`,
-      `• Métodos: ${procesos.compra_presencial.metodos_pago.join(', ')}`,
-      '',
-      '🔹 **Servicios Disponibles:**',
-      '• Venta de combustibles al detal y por mayor',
-      '• Venta y distribución de GLP',
-      '• Venta de lubricantes y productos relacionados',
-      '• Servicios técnicos y mantenimiento',
-      '',
-      '🔹 **Requisitos Generales:**',
-      '• Personas naturales: 18 años, identificación válida',
-      '• Empresas: Licencia de operación, documentos legales',
-      '',
-      '📞 **¿Problemas con tu pedido?**',
-      '• Ventas: (53) 31-xxxxxx ext. 101',
-      '• Soporte: (53) 31-xxxxxx ext. 102'
+      'Ten en cuenta que los pedidos se guardan localmente en el navegador: no se envían a CUPET ni se procesan como compras reales.'
     ];
   }
-  
-  // Ayuda con cuentas/registro
-  getAccountHelp(message) {
+  getAccountHelp() {
     return [
-      '👤 **Ayuda con Cuenta y Registro:**',
+      '👤 **Acceso y registro**',
       '',
-      '🔹 **Pasos para Registrarse:**',
-      '1. Visita www.cupetlasunas.cu',
-      '2. Haz clic en "Registrarse" o "Crear Cuenta"',
-      '3. Completa el formulario con tus datos personales',
-      '4. Verifica tu correo electrónico',
-      '5. Completa tu perfil de usuario',
-      '6. ¡Listo para comprar!',
+      'Desde la portada puedes entrar en «Iniciar sesión» o «Registrarse». Después de completar el formulario de demostración, la web permite acceder al panel del cliente.',
       '',
-      '🔹 **Requisitos para el Registro:**',
-      '• Carnet de identidad válido',
-      '• Correo electrónico activo',
-      '• Número de teléfono',
-      '• Comprobante de domicilio (para empresas)',
-      '',
-      '🔹 **Beneficios de tener cuenta:**',
-      '• Acceso a precios especiales',
-      '• Historial de compras',
-      '• Seguimiento de pedidos',
-      '• Descuentos por lealtad',
-      '',
-      '🔹 **Si olvidaste tu contraseña:**',
-      '1. Ve a "Iniciar Sesión"',
-      '2. Haz clic en "¿Olvidaste tu contraseña?"',
-      '3. Ingresa tu correo electrónico',
-      '4. Recibirás instrucciones para recuperarla',
-      '',
-      '📞 **¿Problemas con tu cuenta?**',
-      '• Soporte técnico: (53) 31-xxxxxx ext. 102',
-      '• Email: soporte@cupet.cu'
+      'La autenticación de este prototipo se simula en el navegador; no existe validación de identidad en un servidor ni recuperación real de contraseñas. Utiliza únicamente datos de prueba.'
     ];
   }
-  
-  // Ayuda con entregas
-  getDeliveryHelp(message) {
-    const servicios = this.knowledgeBase.servicios;
-    
+  getDeliveryHelp() {
     return [
-      '🚚 **Ayuda con Entregas:**',
+      '🚚 **Solicitud de distribución**',
       '',
-      '🔹 **Opciones de Entrega:**',
+      'La web incluye una sección de distribución donde puedes completar los datos de una solicitud de entrega de demostración. Revisa cuidadosamente los campos y la información antes de continuar.',
       '',
-      '**1. Entrega a Domicilio:**',
-      `• Disponible para pedidos > 100L`,
-      `• Horario: ${this.knowledgeBase.horarios.entregas_domicilio.lunes_viernes}`,
-      `• Tiempo: 24-48 horas según zona`,
-      '',
-      '**2. Recogida en Estación:**',
-      `• Horario: ${this.knowledgeBase.horarios.estacion_principal.lunes_viernes}`,
-      `• Tiempo de espera: 5-15 minutos`,
-      '',
-      '**3. Entrega Programada (GLP):**',
-      `• Tiempo de entrega: 24-72 horas`,
-      `• Cobertura: Provincia de Las Tunas y municipios cercanos`,
-      '',
-      '🔹 **Seguimiento de Entrega:**',
-      '• Online: www.cupetlasunas.cu/mi-pedido',
-      '• WhatsApp: +53 5xxxxxxx',
-      '• Teléfono: (53) 31-xxxxxx',
-      '',
-      '🔹 **Requisitos para Entrega:**',
-      '• Identificación válida al recibir',
-      '• Contenedores adecuados para GLP',
-      '• Pago confirmado (si aplica)',
-      '',
-      '🔹 **Si tu entrega está retrasada:**',
-      '1. Verifica tu número de seguimiento',
-      '2. Llama al (53) 31-xxxxxx ext. 102',
-      '3. Proporciona tu número de pedido',
-      '',
-      '📞 **Contacto de Entregas:**',
-      `• Teléfono: ${servicios.distribucion_glp.response_time} para confirmación`,
-      '• Email: info@cupetlastunas.cu'
+      'El prototipo no consulta rutas, disponibilidad de vehículos ni estados logísticos reales. La solicitud no se transmite a un sistema operativo de CUPET.'
     ];
   }
-  
-  // Ayuda con documentación
-  getDocumentationHelp(message) {
-    const requisitos = this.knowledgeBase.requisitos;
-    
+  getDocumentationHelp() {
     return [
-      '📋 **Ayuda con Documentación:**',
+      '📄 **Sobre comprobantes y documentos**',
       '',
-      '🔹 **Documentos Requeridos:**',
+      'La plataforma de demostración muestra un resumen y una confirmación del pedido, pero no emite facturas fiscales ni comprobantes oficiales.',
       '',
-      '**Personas Naturales:**',
-      ...requisitos.personas_naturales.documentos.map(doc => `• ${doc}`),
-      `• Edad mínima: ${requisitos.personas_naturales.edad_minima}`,
-      '',
-      '**Empresas:**',
-      ...requisitos.empresas.documentos.map(doc => `• ${doc}`),
-      '',
-      '**Cooperativas:**',
-      ...requisitos.cooperativas.documentos.map(doc => `• ${doc}`),
-      '',
-      '🔹 **Facturación:**',
-      '• Factura inmediata con sello fiscal',
-      '• Soporte para facturación electrónica',
-      '• Facturación mensual para empresas',
-      '',
-      '🔹 **Comprobantes de Pago:**',
-      '• Recibo oficial de CUPET',
-      '• Válido para garantías y devoluciones',
-      '• Conservar por 6 meses',
-      '',
-      '🔹 **¿Necesitas un documento específico?**',
-      '• Administración: (53) 31-xxxxxx ext. 103',
-      '• Email: administracion@cupet.cu'
+      'Si necesitas un documento válido para una operación real, debes confirmarlo directamente con los canales oficiales de CUPET.'
     ];
   }
-  
-  // Ayuda general de servicio
   getGeneralServiceHelp(message) {
     return [
       '🤝 **Ayuda General - Servicio al Cliente:**',
